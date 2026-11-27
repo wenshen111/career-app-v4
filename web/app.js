@@ -26,6 +26,7 @@ let S = LS.get('state', {}), H = LS.get('hist', {}), L = LS.get('ledger', {entri
 function norm() {
   S.checks = S.checks || {}; S.todos = S.todos || []; S.days = S.days || {}; S.cnt = S.cnt || {};
   if (S.grids) { for (const [id, g] of Object.entries(S.grids)) if (S.cnt[id] == null) S.cnt[id] = (g || []).filter(Boolean).length; delete S.grids; }
+  S.wait = S.wait || {}; S.later = S.later || {};
   L.entries = L.entries || []; M.adj = M.adj || {};
 }
 norm();
@@ -54,6 +55,7 @@ const level = () => { const x = xp(), lv = Math.floor(Math.sqrt(x / 12)) + 1, a 
 const TITLES = ['见习发掘员', '探方能手', '地层侦探', '遗址主管', '发掘领队', '考古探险家', '遗产守护者', '传说级考古学家'];
 function streak() { let n = 0; const d = new Date(); if (!S.days[TODAY]) d.setDate(d.getDate() - 1); while (S.days[ymd(d)]) { n++; d.setDate(d.getDate() - 1); } return n; }
 const touch = () => { S.days[TODAY] = 1; };
+const parked = id => !!(S.wait[id] || S.later[id]);
 
 /* ============ history ============ */
 function put(k, v) {
@@ -196,13 +198,13 @@ function tapSquare(el, e) {
 /* ============ views ============ */
 function quests() {
   const q = [];
-  for (const it of D.items) if (it.dl && frac(it) < 1) { const n = days(it.dl); if (n >= 0 && n <= 30) q.push({k: 'item', id: it.id, t: it.n, sub: '截止', n, check: it.type === 'once'}); }
+  for (const it of D.items) if (it.dl && frac(it) < 1 && !parked(it.id)) { const n = days(it.dl); if (n >= 0 && n <= 30) q.push({k: 'item', id: it.id, t: it.n, sub: '截止', n, check: it.type === 'once'}); }
   for (const f of FEED) if (f.deadline && (f.status || 'new') === 'new') { const n = days(f.deadline); if (n >= 0 && n <= 14) q.push({k: 'feed', id: f.id, t: f.title, sub: f.org || f.kind, n, check: true}); }
   for (const r of D.reminders) { const n = days(r.d); if (n >= 0 && n <= 21) q.push({k: 'rem', t: r.t, sub: '日程', n}); }
   q.sort((a, b) => a.n - b.n);
-  for (const t of S.todos) if (!t.done || t.d === TODAY) q.push({k: 'todo', id: t.id, t: t.t, sub: t.due ? '待办' : '', n: t.due ? days(t.due) : null, done: t.done, check: true});
+  for (const t of S.todos) if (t.done ? t.d === TODAY : !t.st) q.push({k: 'todo', id: t.id, t: t.t, sub: t.due ? '待办' : '', n: t.due ? days(t.due) : null, done: t.done, check: true});
   const touched = new Set(Object.keys(S.todayTap || {}).filter(k => S.todayTap[k] === TODAY));
-  D.items.filter(it => it.type !== 'once' && it.s === 'now' && frac(it) < 1 && !touched.has(it.id)).sort((a, b) => gain(b) - gain(a)).slice(0, 2)
+  D.items.filter(it => it.type !== 'once' && it.s === 'now' && frac(it) < 1 && !touched.has(it.id) && !parked(it.id)).sort((a, b) => gain(b) - gain(a)).slice(0, 2)
     .forEach(it => q.push({k: 'grow', id: it.id, t: `给「${it.n}」涂一格`, sub: '推荐：最能提高成功率', check: true}));
   return q;
 }
@@ -219,26 +221,27 @@ function vToday() {
   <div class="card"><div class="card-h"><h2>今日任务</h2><small>${WD[new Date().getDay()] ? '周' + WD[new Date().getDay()] : ''} · ${TODAY.slice(5).replace('-', '/')}</small></div>
   ${q.length ? q.map(x => `<div class="quest ${x.done ? 'done' : ''}">${x.check ? `<button class="qbox ${x.done ? 'on' : ''}" data-q="${x.k}" data-id="${esc(x.id)}" aria-label="完成"><svg><use href="#i-check"/></svg></button>` : '<span class="qbox" style="border-style:dashed"></span>'}<span class="t" ${x.k === 'item' || x.k === 'grow' ? `data-open="item" data-id="${x.id}" style="cursor:pointer"` : x.k === 'feed' ? `data-open="feed" data-id="${esc(x.id)}" style="cursor:pointer"` : ''}>${esc(x.t)}${x.sub ? `<small>${esc(x.sub)}</small>` : ''}</span>${dueTag(x.n)}</div>`).join('') : mascotEmpty('今天没有任务，去修炼场涂几格吧')}
   <button class="link" data-open="todo">+ 加一个待办</button></div>
+  ${vPending()}
   <div class="card"><div class="card-h"><h2>新情报</h2><button class="link" data-tab="intel">全部 ${nf.length}</button></div>${nf.length ? nf.slice(0, 3).map(feedRow).join('') : mascotEmpty('每天早上会有新机会送到这里')}</div>
   <div class="card"><div class="card-h"><h2>身价曲线</h2><small>每天记一个点</small></div><div class="fig" id="evFig"></div></div>`;
 }
 function feedRow(f) {
   const imp = Math.max(0, Math.min(5, Math.round(+f.imp || 0))), n = f.deadline ? days(f.deadline) : null;
   const fresh = (f.status || 'new') === 'new' && f.found && Date.now() - Date.parse(f.found + 'T00:00:00') < 2 * 864e5;
-  return `<button class="row" data-open="feed" data-id="${esc(f.id)}"><span class="badge imp${imp}">${imp}</span><span class="t">${esc(f.title)}<small>${fresh ? '<span class="tag new">新</span>' : ''}<span class="tag">${esc(f.kind || '机会')}</span>${esc(f.org || '')}</small></span>${dueTag(n)}</button>`;
+  return `<button class="row" data-open="feed" data-id="${esc(f.id)}"><span class="badge imp${imp}">${imp}</span><span class="t">${esc(f.title)}<small>${fresh ? '<span class="tag new">新</span>' : ''}${PARK[f.status] ? `<span class="tag">${PARK[f.status]}</span>` : ''}<span class="tag">${esc(f.kind || '机会')}</span>${esc(f.org || '')}</small></span>${dueTag(n)}</button>`;
 }
 function vIntel() {
   let body;
   if (ui.intel === 'gigs') {
     body = `<div class="card">${[...D.gigs].sort((a, b) => b.p + b.c - a.p - a.c).map((g, i) => `<button class="row" data-open="gig" data-id="${i}"><span class="badge imp${Math.min(5, g.p + 1)}">${g.p}</span><span class="t">${esc(g.n)}<small>${esc(g.pay)} · 约${g.w}周见钱</small></span></button>`).join('')}</div>`;
   } else {
-    const done = ui.intel === 'done';
+    const done = ui.intel === 'done', wait = ui.intel === 'wait';
     const kinds = [...new Set(FEED.map(f => f.kind).filter(Boolean))];
-    const list = FEED.filter(f => done ? ['done', 'dismissed'].includes(f.status) : (f.status || 'new') === 'new').filter(f => ui.kind === 'all' || f.kind === ui.kind)
+    const list = FEED.filter(f => done ? ['done', 'dismissed'].includes(f.status) : wait ? ['wait', 'later'].includes(f.status) : (f.status || 'new') === 'new').filter(f => ui.kind === 'all' || f.kind === ui.kind)
       .sort((a, b) => (b.imp || 0) - (a.imp || 0) || (a.deadline ? days(a.deadline) : 999) - (b.deadline ? days(b.deadline) : 999));
-    body = (kinds.length ? chipBtns('kind', [['all', '全部'], ...kinds.map(k => [k, esc(k)])], ui.kind) : '') + `<div class="card">${list.length ? list.map(feedRow).join('') : mascotEmpty(done ? '还没有处理过的情报' : '新情报每天早上 7:47 送到，按重要程度排好')}</div>`;
+    body = (kinds.length ? chipBtns('kind', [['all', '全部'], ...kinds.map(k => [k, esc(k)])], ui.kind) : '') + `<div class="card">${list.length ? list.map(feedRow).join('') : mascotEmpty(done ? '还没有处理过的情报' : wait ? '没有在等结果或回头再说的情报' : '新情报每天早上 7:47 送到，按重要程度排好')}</div>`;
   }
-  return `<h1>情报站</h1>${segBtns('intel', [['new', '新机会'], ['gigs', '常驻兼职'], ['done', '已处理']], ui.intel)}${body}`;
+  return `<h1>情报站</h1>${segBtns('intel', [['new', '新机会'], ['wait', '等结果'], ['gigs', '常驻兼职'], ['done', '已处理']], ui.intel)}${body}`;
 }
 let MAP = null, mapLoading = false;
 function loadMap() { if (MAP || mapLoading) return; mapLoading = true; fetch('map.json').then(r => r.json()).then(j => { MAP = j; if (ui.tab === 'map') render(); }).catch(() => { mapLoading = false; }); }
@@ -345,7 +348,7 @@ function feedSheet(id) {
   const st = f.status || 'new', imp = Math.max(0, Math.min(5, Math.round(+f.imp || 0)));
   openSheet(`<div style="display:flex;gap:12px;align-items:center"><span class="badge imp${imp}">${imp}</span><div><h3>${esc(f.title)}</h3><div class="sub" style="margin:0">${esc(f.org || '')}</div></div></div>
   <dl class="kv"><dt>类型</dt><dd>${esc(f.kind || '机会')}</dd>${f.pay ? `<dt>报酬</dt><dd>${esc(f.pay)}</dd>` : ''}${f.loc ? `<dt>地点</dt><dd>${esc(f.loc)}</dd>` : ''}${f.deadline ? `<dt>截止</dt><dd>${esc(f.deadline)}（${days(f.deadline)}天）</dd>` : ''}${f.found ? `<dt>发现</dt><dd>${esc(f.found)}</dd>` : ''}</dl><p>${esc(f.why || '')}</p>
-  <div class="btns">${safeUrl(f.link) ? `<a class="btn pri" href="${esc(f.link)}" target="_blank" rel="noopener">打开链接</a>` : ''}${st === 'new' ? `<button class="btn ok" data-fs="done" data-id="${esc(f.id)}">处理完了</button><button class="btn" data-fs="dismissed" data-id="${esc(f.id)}">不感兴趣</button>` : `<button class="btn" data-fs="new" data-id="${esc(f.id)}">放回新机会</button>`}</div>`);
+  <div class="btns">${safeUrl(f.link) ? `<a class="btn pri" href="${esc(f.link)}" target="_blank" rel="noopener">打开链接</a>` : ''}${st === 'new' ? `<button class="btn ok" data-fs="done" data-id="${esc(f.id)}">处理完了</button><button class="btn" data-fs="wait" data-id="${esc(f.id)}">申请了，等结果</button><button class="btn" data-fs="later" data-id="${esc(f.id)}">回头再说</button><button class="btn" data-fs="dismissed" data-id="${esc(f.id)}">不感兴趣</button>` : `<button class="btn" data-fs="new" data-id="${esc(f.id)}">放回新机会</button>`}</div>`);
 }
 function gigSheet(i) {
   const g = [...D.gigs].sort((a, b) => b.p + b.c - a.p - a.c)[i]; if (!g) return; sheetKind = 'gig';
@@ -366,11 +369,11 @@ function todoSheet() {
 }
 
 /* ============ 说一句: understand, then confirm ============ */
-const EXAMPLES = ['A1/A3考过了', '学了两小时德语', '午饭12欧', '周五前给教授发邮件', 'Mercor那个申请了'];
+const EXAMPLES = ['完成了', 'A1/A3考过了', '学了两小时德语', '午饭12欧', '周五前给教授发邮件', 'Mercor那个申请了'];
 let capture = null;
 function captureSheet(pre = '') {
-  sheetKind = 'capture'; capture = {text: pre, actions: [], reply: ''};
-  openSheet(`<h3>说一句</h3><div class="sub">做完了什么、花了什么钱、要做什么。我来找对应的项目，你确认就记上。</div>
+  sheetKind = 'capture'; capture = {text: pre, actions: [], reply: ''}; chat = null;
+  openSheet(`<h3>说一句</h3><div class="sub">做完了什么、花了什么钱、要做什么。我来找对应的项目，你确认就记上。只说「完成了」也行，我一步步问你。</div>
   <form id="capF"><textarea id="capIn" maxlength="300" placeholder="比如：今天学了一小时德语，午饭花了12欧" aria-label="说一句">${esc(pre)}</textarea>
   <div class="ex">${EXAMPLES.map(e => `<button type="button" data-ex="${esc(e)}">${esc(e)}</button>`).join('')}</div>
   <div class="btns"><button class="btn pri" style="flex:1;justify-content:center"><svg width="18" height="18"><use href="#i-spark"/></svg>识别</button></div></form><div id="capOut"></div>`, () => $('#capIn').focus());
@@ -430,6 +433,10 @@ function cleanActs(r) {
   return out;
 }
 async function understand(text) {
+  if (chat && chat.step !== 'end') { chatSay(text); return; }
+  if (chat && /^(没了|没有了|不用了|好了|谢谢)/.test(text.trim())) { closeSheet(); return; }
+  if (doneIntent(text)) { startChat(text); return; }
+  chat = null;
   const out = $('#capOut'); out.innerHTML = `<div class="thinking"><i></i><i></i><i></i>${ask ? 'Claude 正在理解…' : '正在识别…'}</div>`;
   let r = null, via = 'local';
   if (ask) {
@@ -483,13 +490,231 @@ function applyAct(i, silent) {
 async function setFeed(id, status, quiet) {
   const f = FEED.find(x => x.id === id); if (!f) return;
   f.status = status; LS.set('feed', FEED); touch(); save('state');
-  if (!quiet) { toast(status === 'done' ? '+5 经验' : status === 'new' ? '放回去了' : '好的，不再显示'); }
+  if (!quiet) { toast(status === 'done' ? '+5 经验' : status === 'new' ? '放回去了' : status === 'wait' ? '放进「等结果」了' : status === 'later' ? '放进「回头再说」了' : '好的，不再显示'); }
   if (db) { try { await db.doc('feed/' + id).update({status}); } catch (e) { toast('没能存到云端'); } }
+}
+
+/* ============ v4.1 等结果 / 回头再说 ============ */
+const PARK = {wait: '等结果', later: '回头再说'};
+function parkedList() {
+  const out = [];
+  for (const t of S.todos) if (!t.done && PARK[t.st]) out.push({k: 'todo', id: t.id, t: t.t, st: t.st});
+  for (const it of D.items) for (const st of ['wait', 'later']) if (S[st][it.id] && frac(it) < 1) out.push({k: 'item', id: it.id, t: it.n, st});
+  for (const f of FEED) if (PARK[f.status]) out.push({k: 'feed', id: f.id, t: f.title, st: f.status});
+  return out.sort((a, b) => (a.st === 'wait' ? 0 : 1) - (b.st === 'wait' ? 0 : 1));
+}
+function vPending() {
+  const l = parkedList(); if (!l.length) return '';
+  return `<div class="card"><div class="card-h"><h2>等结果 · 回头再说</h2><small>${l.length} 件</small></div>${l.map(x => `<div class="quest"><button class="qbox" data-pfin="${x.k}" data-id="${esc(x.id)}" aria-label="有结果了，划到完成"><svg><use href="#i-check"/></svg></button><span class="t">${esc(x.t)}<small><span class="tag">${PARK[x.st]}</span>${x.k === 'feed' ? '情报' : x.k === 'item' ? '修炼项目' : '待办'}</small></span><button class="link" data-pback="${x.k}" data-id="${esc(x.id)}">拉回</button></div>`).join('')}<p class="hint">有结果了点左边的框；想重新做就点「拉回」。</p></div>`;
+}
+// one place that knows how each kind of thing changes status: done / wait / later / drop / back
+function setStatus(k, id, st) {
+  if (k === 'todo') { const t = S.todos.find(x => x.id === id); if (!t) return false; if (st === 'done') { t.done = true; t.d = TODAY; delete t.st; } else if (st === 'back') { t.done = false; delete t.st; } else { t.st = st; t.d = TODAY; } }
+  else if (k === 'feed') { if (!FEED.find(x => x.id === id)) return false; setFeed(id, st === 'drop' ? 'dismissed' : st === 'back' ? 'new' : st, true); }
+  else if (k === 'item') {
+    const it = I[id]; if (!it) return false;
+    delete S.wait[id]; delete S.later[id];
+    if (st === 'done') { if (it.type === 'once') S.checks[id] = true; else if (it.type === 'end') S.cnt[id] = it.sq; else S.cnt[id] = (Math.floor(cnt(id) / LVL) + 1) * LVL; }
+    else if (st === 'wait' || st === 'later') S[st][id] = TODAY;
+  }
+  afterChange(false); return true;
+}
+function parkClick(t) {
+  const f = t.closest('[data-pfin]'); if (f) { setStatus(f.dataset.pfin, f.dataset.id, 'done'); confetti(innerWidth / 2, innerHeight / 3); toast('划到完成了！'); render(); return true; }
+  const b = t.closest('[data-pback]'); if (b) { setStatus(b.dataset.pback, b.dataset.id, 'back'); toast('拉回来了'); render(); return true; }
+  return false;
+}
+
+/* ============ v4.1 说「完成了」：像客服一样一步步确认 ============ */
+// 这里是本机规则，不是 Claude 或 GPT 在回答。
+const DONE_RE = /(完成了|完成|做完了?|弄完了?|弄好了?|搞定了?|写完了?|交了|提交了|考完了?|考过了?|结束了|发了|申请了|投了|done)/i;
+const doneIntent = text => DONE_RE.test(text) && !/\d+(?:[.,]\d+)?\s*(?:€|欧|eur|块)|€\s*\d/i.test(text) && text.split(/[，,。；;！!\n]|然后|还有|并且/).filter(x => x.trim()).length <= 1;
+let chat = null;
+const KIND = {todo: '待办', feed: '情报', item: '修炼'};
+function chatPool() {
+  const out = [];
+  for (const t of S.todos) if (!t.done && t.st !== 'drop') out.push({k: 'todo', id: t.id, n: t.t, st: t.st, due: t.due});
+  for (const f of FEED) if (['new', 'wait', 'later'].includes(f.status || 'new')) out.push({k: 'feed', id: f.id, n: f.title, st: PARK[f.status] ? f.status : null, due: f.deadline});
+  for (const it of D.items) if (frac(it) < 1 && (it.s === 'now' || it.dl || parked(it.id))) out.push({k: 'item', id: it.id, n: it.n, st: S.wait[it.id] ? 'wait' : S.later[it.id] ? 'later' : null, due: it.dl, it});
+  return out;
+}
+function rankPool(text) {
+  const q = text.replace(DONE_RE, ' ').replace(/[那个这个的了吗呢啊吧，,。.!！?？\s]/g, ' ').trim(), qb = bigrams(q), low = q.toLowerCase();
+  const pool = chatPool().map(c => {
+    let s = 0; const names = [c.n, ...(c.k === 'item' ? D.alias[c.id] || [] : [])];
+    for (const a of names) { const al = String(a).toLowerCase(); if (low && al && (low.includes(al) || al.includes(low))) s = Math.max(s, 2); const ab = bigrams(a); let h = 0; ab.forEach(x => { if (qb.has(x)) h++; }); if (ab.size && qb.size) s = Math.max(s, h / Math.min(ab.size, qb.size)); }
+    const soon = c.due ? Math.max(0, 60 - days(c.due)) / 600 : 0; // 截止越近越靠前
+    const base = c.st === 'wait' ? 3 : c.k === 'todo' ? 2 : c.k === 'feed' ? 1 : Math.min(.9, gain(c.it) / 10); // 等结果的、待办优先，修炼项目按收益
+    return Object.assign(c, {s, o: base + soon});
+  });
+  const hit = pool.filter(c => c.s >= .34).sort((a, b) => b.s - a.s);
+  return {hit, rest: pool.filter(c => c.s < .34).sort((a, b) => b.o - a.o), q};
+}
+function startChat(text) {
+  const {hit, rest, q} = rankPool(text);
+  chat = {step: 'pick', log: [{me: 1, t: text}], hit, rest, q, more: false, raw: text};
+  if (hit.length === 1) { chat.log.push({t: `是「${hit[0].n}」吗？`}); chat.cands = [hit[0], ...rest.slice(0, 3)]; }
+  else if (hit.length) { chat.log.push({t: '好！是哪一个？'}); chat.cands = [...hit, ...rest].slice(0, 5); }
+  else { chat.log.push({t: q ? `没对上「${q}」。是下面哪一个？` : '好！是哪一个？'}); chat.cands = rest.slice(0, 5); }
+  drawChat();
+}
+function degreeOpts(c) {
+  if (c.k === 'feed') return [['wait', '申请了，等结果'], ['done', '处理完了'], ['drop', '看了，不合适']];
+  if (c.k === 'todo') return [['done', '全部做完了'], ['part', '做了一部分'], ['wait', '交了 / 发了，等回复']];
+  if (c.it.type === 'once') return [['done', '完成了，拿到了'], ['wait', '考了 / 交了，等结果']];
+  return [['done', '全部完成'], ['part', '做了一部分']];
+}
+const ACTS = [['done', '划到完成'], ['wait', '等结果'], ['drop', '不考虑'], ['later', '回头再说']];
+const actsFor = c => ACTS.filter(([v]) => !(c.k === 'item' && v === 'drop')); // 修炼项目不能「不考虑」：那会改成功率
+function pickCand(c) {
+  chat.sel = c; chat.step = 'degree';
+  chat.log.push({me: 1, t: c.n});
+  chat.log.push({t: c.st === 'wait' ? `「${c.n}」之前在等结果。现在呢？` : `「${c.n}」，做到哪一步了？`});
+  drawChat();
+}
+function pickDegree(v, label) {
+  const c = chat.sel; chat.deg = v; chat.log.push({me: 1, t: label});
+  if (v === 'part' && c.k === 'item') { chat.step = 'squares'; chat.log.push({t: `给「${c.n}」涂几格？`}); }
+  else { chat.step = 'act'; chat.rec = v === 'part' ? 'keep' : v; chat.log.push({t: v === 'part' ? '那先留着。要怎么放？' : '那我这样处理，可以吗？'}); }
+  drawChat();
+}
+const ACT_DONE = {done: '划到完成了', wait: '放进「等结果」了', drop: '标成不考虑了', later: '放进「回头再说」了', keep: '留在今日任务里了'};
+function doAct(v, label) {
+  const c = chat.sel; chat.log.push({me: 1, t: label});
+  if (v !== 'keep') setStatus(c.k, c.id, v);
+  if (v === 'done') { confetti(innerWidth / 2, innerHeight * .4); cheer(); }
+  chat.log.push({t: `「${c.n}」${ACT_DONE[v]}。还有别的吗？`}); chat.step = 'end'; drawChat();
+}
+function doSquares(n) {
+  const c = chat.sel, it = c.it; chat.log.push({me: 1, t: `${n} 格`});
+  setCnt(c.id, (it.type === 'grow' ? cnt(c.id) : Math.min(it.sq, cnt(c.id))) + n);
+  chat.log.push({t: `「${c.n}」涂了 ${n} 格，现在 ${status(it)}。还有别的吗？`}); chat.step = 'end'; drawChat();
+}
+function noneOfThem() {
+  const t = chat.q || chat.raw; chat.log.push({me: 1, t: '都不是'});
+  if (chat.q && chat.q.length >= 2) { S.todos.push({id: 't' + Date.now().toString(36), t: chat.q.slice(0, 80), done: true, d: TODAY, due: null}); afterChange(false); chat.log.push({t: `那我把「${chat.q}」记成今天完成的一件事（+2 经验）。如果它应该算进某个修炼项目，跟 Claude 说一声加进目录。还有别的吗？`}); }
+  else chat.log.push({t: `没找到「${t}」对应的。打字告诉我是哪件事，比如「德语那个完成了」。还有别的吗？`});
+  chat.step = 'end'; drawChat();
+}
+// typed replies during the chat
+function chatSay(text) {
+  const t = text.trim();
+  if (chat.step === 'pick') { if (/^(都不是|没有|不是)/.test(t)) noneOfThem(); else startChat(t); return; }
+  chat.log.push({me: 1, t});
+  if (chat.step === 'degree') {
+    const o = degreeOpts(chat.sel), m = /等|交了|发了|申请|考了/.test(t) ? 'wait' : /一部分|一半|部分|还没完|没做完/.test(t) ? 'part' : /不合适|不要|算了/.test(t) ? 'drop' : /全|都|完成|做完|是|拿到/.test(t) ? 'done' : null;
+    const hit = o.find(x => x[0] === m); chat.log.pop();
+    if (hit) { pickDegree(hit[0], t); return; }
+  } else if (chat.step === 'act') {
+    const m = /划|完成|好|可以|行|嗯|对/.test(t) ? (chat.rec === 'keep' ? 'keep' : chat.rec) : /等/.test(t) ? 'wait' : /不考虑|不要|算了/.test(t) ? 'drop' : /回头|以后|再说|晚点/.test(t) ? 'later' : null;
+    const ok = m && (m === 'keep' || actsFor(chat.sel).some(x => x[0] === m)); chat.log.pop();
+    if (ok) { doAct(m, t); return; }
+  } else if (chat.step === 'squares') {
+    const n = parseInt(t, 10) || CN[t.replace(/格|个/g, '')] || 0; chat.log.pop();
+    if (n > 0) { doSquares(Math.min(10, Math.round(n))); return; }
+  }
+  chat.log.push({me: 1, t}, {t: '没听懂，点下面的按钮选一个就行。'}); drawChat();
+}
+function chatOpts() {
+  const c = chat.sel, b = (k, v, label, rec, sub) => `<button data-chat="${k}" data-v="${esc(v)}" class="${rec ? 'rec' : ''}" aria-pressed="false">${esc(label)}${sub ? `<small>${esc(sub)}</small>` : ''}</button>`;
+  if (chat.step === 'pick') {
+    const list = chat.more ? [...chat.hit, ...chat.rest].slice(0, 12) : chat.cands;
+    return list.map((x, i) => b('pick', x.k + ':' + x.id, x.n, i === 0 && chat.hit.length, (PARK[x.st] ? PARK[x.st] + ' · ' : '') + KIND[x.k])).join('') + (chat.more ? '' : b('more', '', '更多…')) + b('none', '', '都不是');
+  }
+  if (chat.step === 'degree') return degreeOpts(c).map(([v, l]) => b('deg', v, l)).join('');
+  if (chat.step === 'squares') return [1, 2, 3, 5].map(n => b('sq', n, n + ' 格')).join('');
+  if (chat.step === 'act') return (chat.rec === 'keep' ? [['keep', '先留着'], ...actsFor(c).filter(x => x[0] !== 'done')] : actsFor(c)).map(([v, l]) => b('act', v, l, v === chat.rec)).join('');
+  return b('again', '', '还有一件完成了') + b('bye', '', '没了');
+}
+function drawChat() {
+  const out = $('#capOut'); if (!out || !chat) return;
+  out.innerHTML = `<div class="chat">${chat.log.map(m => m.me ? `<div class="me">${esc(m.t)}</div>` : `<div class="bot"><svg aria-hidden="true"><use href="#pot"/></svg><div class="bubble">${esc(m.t)}</div></div>`).join('')}<div class="alts" id="chatOpts">${chatOpts()}</div></div><p class="hint">本机识别，按按钮或直接打字回答都行。</p>`;
+  $('#capIn').placeholder = chat.step === 'end' ? '还有别的？比如：德语那个也完成了' : '也可以直接打字回答';
+  requestAnimationFrame(() => { const o = $('#chatOpts'); if (o && o.scrollIntoView) o.scrollIntoView({block: 'nearest', behavior: 'smooth'}); });
+}
+function chatClick(t) {
+  const el = t.closest('[data-chat]'); if (!el || !chat) return false;
+  const k = el.dataset.chat, v = el.dataset.v, label = el.firstChild.textContent;
+  if (k === 'pick') { const [kk, ...rest] = v.split(':'), id = rest.join(':'); const c = [...chat.hit, ...chat.rest].find(x => x.k === kk && x.id === id); if (c) pickCand(c); }
+  else if (k === 'more') { chat.more = true; drawChat(); }
+  else if (k === 'none') noneOfThem();
+  else if (k === 'deg') pickDegree(v, label);
+  else if (k === 'act') doAct(v, label);
+  else if (k === 'sq') doSquares(+v);
+  else if (k === 'again') { chat = null; $('#capIn').value = '完成了'; startChat('完成了'); $('#capIn').value = ''; }
+  else if (k === 'bye') closeSheet();
+  return true;
+}
+
+/* ============ v4.1 备份：导出 / 导入 ============ */
+// 只打包这些 localStorage。照片和任何密钥都不在里面（v4 本来也不存）。
+const BK = [['state', '进度、待办、打卡天数', () => S], ['hist', '各项曲线的历史点', () => H], ['ledger', '钱包记账', () => L], ['model', '成功率微调', () => M], ['feed', '情报和它们的状态', () => FEED]];
+const bkSum = (k, v) => {
+  if (!v) return '无';
+  if (k === 'state') return `${Object.keys(v.cnt || {}).length + Object.keys(v.checks || {}).filter(x => v.checks[x]).length} 个项目有进度 · ${(v.todos || []).length} 条待办 · ${Object.keys(v.days || {}).length} 天记录`;
+  if (k === 'hist') return `${Object.keys(v).length} 条曲线 · ${Object.values(v).reduce((a, x) => a + (Array.isArray(x) ? x.length : 0), 0)} 个点`;
+  if (k === 'ledger') return `${(v.entries || []).length} 笔`;
+  if (k === 'model') return `${Object.keys(v.adj || {}).length} 条微调`;
+  if (k === 'feed') return `${(v || []).length} 条`;
+  return '';
+};
+const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+const BK_OK = {state: isObj, hist: isObj, ledger: v => isObj(v) && Array.isArray(v.entries), model: isObj, feed: Array.isArray};
+let incoming = null;
+function backupSheet() {
+  sheetKind = 'backup'; incoming = null;
+  openSheet(`<h3>备份</h3><div class="sub">数据只存在这台设备的浏览器里。换手机、换浏览器、清缓存之前，先导出一份。</div>
+  <div class="btns"><button class="btn pri" id="bkExport" style="flex:1;justify-content:center">导出备份</button><button class="btn" id="bkImport" style="flex:1;justify-content:center">导入备份</button></div>
+  <input type="file" id="bkFile" accept=".json,application/json" hidden>
+  <div class="ovr">${BK.map(([k, n, g]) => `<b>${n}</b><span>${esc(bkSum(k, g()))}</span><span></span>`).join('')}</div>
+  <p class="hint">导出文件名是 wsr4-backup-日期.json，不含照片，也不含任何密钥。</p><div id="bkOut"></div>`);
+}
+function exportBackup() {
+  const data = {}; for (const [k, , g] of BK) data['wsr4-' + k] = clone(g());
+  const d = new Date(), name = `wsr4-backup-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}.json`;
+  const blob = new Blob([JSON.stringify({app: 'wsr4', version: 'v4.1', exported: d.toISOString(), data}, null, 1)], {type: 'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  toast('已导出 ' + name);
+}
+function previewImport(file) {
+  const out = $('#bkOut');
+  if (file.size > 5e6) { out.innerHTML = '<p class="hint">文件太大了，不像是这个 App 的备份。</p>'; return; }
+  file.text().then(txt => {
+    let j = null; try { j = JSON.parse(txt); } catch (e) {}
+    const data = j && j.app === 'wsr4' && isObj(j.data) ? j.data : null;
+    const rows = data ? BK.filter(([k]) => ('wsr4-' + k) in data) : [];
+    const bad = rows.filter(([k]) => !BK_OK[k](data['wsr4-' + k]));
+    if (!rows.length || bad.length) { incoming = null; out.innerHTML = `<p class="hint">${!data ? '这不是「挣钱路线图」的备份文件。' : bad.length ? '备份里「' + bad.map(x => x[1]).join('、') + '」格式不对，没有导入。' : '备份里没有可导入的内容。'}</p>`; return; }
+    incoming = Object.fromEntries(rows.map(([k]) => [k, data['wsr4-' + k]]));
+    out.innerHTML = `<div class="card" style="padding:14px;margin-top:12px"><h2>导入会覆盖这些</h2><p class="hint" style="margin-top:4px">${esc(j.exported ? '备份时间 ' + j.exported.slice(0, 16).replace('T', ' ') : '')}。左边是现在这台设备上的，右边是备份里的。</p>
+    <div class="ovr">${rows.map(([k, n, g]) => `<b>${n}</b><span>${esc(bkSum(k, g()))}</span><span>→ ${esc(bkSum(k, incoming[k]))}</span>`).join('')}</div>
+    ${BK.filter(([k]) => !(k in incoming)).length ? `<p class="hint">备份里没有的（${BK.filter(([k]) => !(k in incoming)).map(x => x[1]).join('、')}）保持不变。</p>` : ''}
+    <div class="btns"><button class="btn warn" id="bkGo" style="flex:1;justify-content:center">覆盖并导入</button><button class="btn" id="bkCancel">取消</button></div></div>`;
+  });
+}
+function applyImport(btn) {
+  if (!incoming) return;
+  if (!btn.dataset.armed) { btn.dataset.armed = 1; btn.textContent = '确定覆盖？再点一次'; setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = '覆盖并导入'; } }, 4000); return; }
+  for (const [k, v] of Object.entries(incoming)) LS.set(k, v);
+  if (db) { // claude.ai 里打开时还要推到云端，否则会被云端旧数据盖回来
+    if (incoming.state) S = clone(incoming.state); if (incoming.hist) H = clone(incoming.hist); if (incoming.ledger) L = clone(incoming.ledger); if (incoming.model) M = clone(incoming.model); if (incoming.feed) FEED = clone(incoming.feed);
+    norm(); ['state', 'hist', 'ledger'].forEach(k => { if (incoming[k]) save(k); }); incoming = null; toast('导入好了'); closeSheet(); return;
+  }
+  toast('导入好了，正在刷新…'); setTimeout(() => location.reload(), 600);
+}
+function bkClick(t) {
+  if (t.closest('#bkExport')) { exportBackup(); return true; }
+  if (t.closest('#bkImport')) { const f = $('#bkFile'); f.value = ''; f.click(); return true; }
+  const go = t.closest('#bkGo'); if (go) { applyImport(go); return true; }
+  if (t.closest('#bkCancel')) { incoming = null; $('#bkOut').innerHTML = ''; return true; }
+  return false;
 }
 
 /* ============ events ============ */
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if (!b) return; ui.tab = b.dataset.t; saveUi(); render(); scrollTo({top: 0}); });
 $('#fab').addEventListener('click', () => captureSheet());
+$('#bk').addEventListener('click', () => backupSheet());
 $('#scrim').addEventListener('click', closeSheet);
 addEventListener('keydown', e => { if (e.key === 'Escape' && $('#sheet').classList.contains('on')) closeSheet(); });
 function onClick(e) {
@@ -517,6 +742,7 @@ function onClick(e) {
   }
   const fs = t.closest('[data-fs]'); if (fs) { setFeed(fs.dataset.id, fs.dataset.fs); closeSheet(); return; }
   const dl = t.closest('[data-delled]'); if (dl) { if (dl.dataset.armed) { L.entries = L.entries.filter(x => x.id !== dl.dataset.delled); save('ledger'); render(); } else { dl.dataset.armed = 1; dl.textContent = '删?'; setTimeout(() => { if (dl.isConnected) { delete dl.dataset.armed; dl.textContent = '×'; } }, 2500); } return; }
+  if (chatClick(t) || bkClick(t) || parkClick(t)) return;
   const ex = t.closest('[data-ex]'); if (ex) { $('#capIn').value = ex.dataset.ex; $('#capIn').focus(); return; }
   const pk = t.closest('[data-pick]'); if (pk) { const a = capture.actions[+pk.dataset.pick]; if (pk.dataset.v === '__more') { const cands = matchItems($('#capIn').value || '').filter(x => x !== a.item && !a.alts.includes(x)).slice(0, 4); const pool = cands.length ? cands : D.items.filter(x => x.s === 'now' && x.id !== a.item && !a.alts.includes(x.id)).sort((p, q) => q.v - p.v).slice(0, 4).map(x => x.id); a.alts = [...a.alts, ...pool].slice(0, 6); } else a.item = pk.dataset.v; drawActs(); return; }
   const c2 = t.closest('[data-cat2]'); if (c2) { capture.actions[+c2.dataset.cat2].cat = c2.dataset.v; drawActs(); return; }
@@ -527,9 +753,10 @@ function onClick(e) {
 }
 V.addEventListener('click', onClick);
 $('#sheet').addEventListener('click', onClick);
+$('#sheet').addEventListener('change', e => { if (e.target.id === 'bkFile' && e.target.files[0]) previewImport(e.target.files[0]); });
 $('#sheet').addEventListener('submit', e => {
   e.preventDefault();
-  if (e.target.id === 'capF') { const v = $('#capIn').value.trim(); if (v) understand(v); }
+  if (e.target.id === 'capF') { const v = $('#capIn').value.trim(); if (v) { understand(v); if (chat) $('#capIn').value = ''; } }
   if (e.target.id === 'ledF') {
     const a = parseFloat($('#lAmt').value); if (!(a > 0)) { toast('先填金额'); return; }
     const c = ($('#ledF .chips [aria-pressed=true]') || {}).dataset?.cat || D.cats[ui.ltype || 'out'][0];
