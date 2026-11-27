@@ -18,9 +18,10 @@ const COL = id => D.colors[id] || '#ff7a59';
 const LVL = 20;
 
 /* ============ state ============ */
+const VER = 'v4.2', SYNCK = ['state', 'hist', 'ledger', 'model', 'feed'];
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('wsr4-' + k) ?? localStorage.getItem('wsr3-' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('wsr4-' + k, JSON.stringify(v)); } catch (e) {} }
+  set(k, v) { try { localStorage.setItem('wsr4-' + k, JSON.stringify(v)); if (SYNCK.includes(k)) syncDirty(); } catch (e) {} }
 };
 let S = LS.get('state', {}), H = LS.get('hist', {}), L = LS.get('ledger', {entries: []}), M = LS.get('model', {adj: {}}), FEED = LS.get('feed', []);
 function norm() {
@@ -667,12 +668,12 @@ function backupSheet() {
   <div class="btns"><button class="btn pri" id="bkExport" style="flex:1;justify-content:center">导出备份</button><button class="btn" id="bkImport" style="flex:1;justify-content:center">导入备份</button></div>
   <input type="file" id="bkFile" accept=".json,application/json" hidden>
   <div class="ovr">${BK.map(([k, n, g]) => `<b>${n}</b><span>${esc(bkSum(k, g()))}</span><span></span>`).join('')}</div>
-  <p class="hint">导出文件名是 wsr4-backup-日期.json，不含照片，也不含任何密钥。</p><div id="bkOut"></div>`);
+  <p class="hint">导出文件名是 wsr4-backup-日期.json，不含照片，也不含任何密钥（同步令牌也不在里面）。</p><div id="bkOut"></div><div id="syncBox">${syncBox()}</div>`);
 }
 function exportBackup() {
   const data = {}; for (const [k, , g] of BK) data['wsr4-' + k] = clone(g());
   const d = new Date(), name = `wsr4-backup-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}.json`;
-  const blob = new Blob([JSON.stringify({app: 'wsr4', version: 'v4.1', exported: d.toISOString(), data}, null, 1)], {type: 'application/json'});
+  const blob = new Blob([JSON.stringify({app: 'wsr4', version: VER, exported: d.toISOString(), data}, null, 1)], {type: 'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   toast('已导出 ' + name);
@@ -711,6 +712,119 @@ function bkClick(t) {
   return false;
 }
 
+/* ============ v4.2 自动同步：存到她自己的私有 GitHub 仓库 ============ */
+// 令牌只存在本机 localStorage 的 wsr4-sync 里，不进备份文件，不上传到任何别的地方。
+// 规则：谁后改谁算数；两边都改过时，输掉的那份留在本机 wsr4-sync-conflict，不会凭空消失。
+const GH = 'https://api.github.com', SYNC_FILE = 'wsr4.json';
+const syncCfg = () => LS.get('sync', null);
+const syncPut = c => { try { localStorage.setItem('wsr4-sync', JSON.stringify(c)); } catch (e) {} };
+const b64enc = s => { const u = new TextEncoder().encode(s); let b = ''; for (let i = 0; i < u.length; i += 0x8000) b += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(b); };
+const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g, '')), c => c.charCodeAt(0)));
+const snapshot = () => { const data = {}; for (const [k, , g] of BK) data['wsr4-' + k] = clone(g()); return data; };
+const hasData = d => !!d && ((d['wsr4-ledger'] || {}).entries || []).length + ((d['wsr4-state'] || {}).todos || []).length + Object.keys((d['wsr4-state'] || {}).cnt || {}).length + Object.keys((d['wsr4-state'] || {}).checks || {}).length > 0;
+let syncT = null, syncBusy = false, syncReady = false, syncEarly = false; // 本次打开先拉一次云端，再开始记本机改动，免得开机写的曲线点把别的设备的新数据盖掉
+function syncDirty() { // 每次本机存数据都会来这里
+  const c = syncCfg(); if (!c || !c.token || db) return;
+  if (!syncReady) { syncEarly = true; return; }
+  if (!c.dirty || !c.local) { c.dirty = true; c.local = Date.now(); } else c.local = Date.now();
+  syncPut(c); clearTimeout(syncT); syncT = setTimeout(() => syncNow(), 2500);
+}
+async function ghFile(c) {
+  const r = await fetch(`${GH}/repos/${c.repo}/contents/${SYNC_FILE}`, {headers: {Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json'}, cache: 'no-store'});
+  if (r.status === 404) return {missing: true};
+  if (!r.ok) throw Object.assign(new Error('gh ' + r.status), {status: r.status});
+  const j = await r.json(); let body = null; try { body = JSON.parse(b64dec(j.content || '')); } catch (e) {}
+  return {sha: j.sha, body};
+}
+async function ghWrite(c, body, sha) {
+  const r = await fetch(`${GH}/repos/${c.repo}/contents/${SYNC_FILE}`, {method: 'PUT', headers: {Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json'},
+    body: JSON.stringify(Object.assign({message: `sync ${new Date(body.updated).toISOString()}`, content: b64enc(JSON.stringify(body))}, sha ? {sha} : {}))});
+  if (!r.ok) throw Object.assign(new Error('gh ' + r.status), {status: r.status});
+  return (await r.json()).content.sha;
+}
+function applyData(data) { // 把一份数据装进内存和本机，然后重画
+  const take = (k, ok) => { const v = data['wsr4-' + k]; return BK_OK[k](v) ? clone(v) : null; };
+  const s = take('state'), h = take('hist'), l = take('ledger'), m = take('model'), f = take('feed');
+  if (s) S = s; if (h) H = h; if (l) L = l; if (m) M = m; if (f) FEED = f;
+  norm(); for (const [k, , g] of BK) { try { localStorage.setItem('wsr4-' + k, JSON.stringify(g())); } catch (e) {} }
+  if (!$('#sheet').classList.contains('on')) render(); else header();
+}
+async function ghPush(c, sha) {
+  const updated = Math.max(Date.now(), (c.base || 0) + 1);
+  const nsha = await ghWrite(c, {app: 'wsr4', version: 'v4.2', updated, data: snapshot()}, sha);
+  Object.assign(c, {sha: nsha, base: updated, dirty: false, err: null, at: Date.now()}); syncPut(c);
+}
+async function syncNow(force) {
+  const c = syncCfg(); if (!c || !c.token || db || syncBusy) return;
+  syncBusy = true; clearTimeout(syncT);
+  try {
+    const rf = await ghFile(c), ru = rf.body && rf.body.app === 'wsr4' ? +rf.body.updated || 0 : 0;
+    if (rf.missing || !ru) await ghPush(c, rf.sha);
+    else if (ru <= (c.base || 0)) { if (c.dirty || force === 'push') await ghPush(c, rf.sha); else { c.at = Date.now(); c.err = null; syncPut(c); } }
+    else if (!c.dirty) { applyData(rf.body.data); Object.assign(c, {sha: rf.sha, base: ru, err: null, at: Date.now()}); syncPut(c); }
+    else { // 两边都改了：谁后改谁算数，输的那份留底
+      const mine = (c.local || 0) > ru;
+      try { localStorage.setItem('wsr4-sync-conflict', JSON.stringify({saved: Date.now(), kept: mine ? 'local' : 'remote', data: mine ? rf.body.data : snapshot()})); } catch (e) {}
+      if (mine) { c.base = ru; await ghPush(c, rf.sha); } else { applyData(rf.body.data); Object.assign(c, {sha: rf.sha, base: ru, dirty: false, err: null, at: Date.now()}); syncPut(c); }
+      toast(mine ? '两台设备都改过，留了这台的' : '两台设备都改过，用了较新的那份');
+    }
+    setSync(true); $('#sync').title = '已同步到私有仓库 ' + c.repo;
+  } catch (e) {
+    const cc = syncCfg() || c; cc.err = e.status === 401 || e.status === 403 ? 'token' : e.status === 404 ? 'repo' : 'net'; syncPut(cc); setSync(false);
+    if (cc.err !== 'net') toast(cc.err === 'token' ? '同步令牌不能用了，去「备份」里重新填' : '找不到同步仓库，去「备份」里看看');
+  } finally { syncBusy = false; if (!syncReady) { syncReady = true; if (syncEarly) { syncEarly = false; syncDirty(); } } if (sheetKind === 'backup') drawSyncBox(); }
+}
+function syncBox() {
+  const c = syncCfg();
+  if (db) return `<div class="card" style="padding:14px;margin-top:14px"><h2>自动同步</h2><p class="hint">在 claude.ai 里打开时，已经由 Claude 的云端同步，这里不用设置。</p></div>`;
+  if (c && c.token) {
+    const st = c.err === 'token' ? '令牌不能用了（过期或权限不对），请重新连接。' : c.err === 'repo' ? `找不到仓库 ${c.repo}，或令牌没有它的权限。` : c.err === 'net' ? '上次没连上网络，有网时会自动补上。' : c.at ? `已同步 · ${new Date(c.at).toLocaleString('zh-CN', {month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}` : '连接中…';
+    return `<div class="card" style="padding:14px;margin-top:14px"><div class="card-h"><h2>自动同步</h2><small>${esc(c.repo)}</small></div><p class="hint" style="margin-top:0">${esc(st)}${c.dirty ? ' 有改动还没传上去。' : ''}</p>
+    <div class="btns"><button class="btn ok" id="syGo">现在同步</button><button class="btn" id="syOff">断开这台设备</button></div></div>`;
+  }
+  return `<div class="card" style="padding:14px;margin-top:14px"><h2>自动同步</h2><p class="hint" style="margin-top:4px">连上你自己的私有 GitHub 仓库，换设备数据也在。每台设备填一次。</p>
+  <form id="syF" style="display:grid;gap:8px;margin-top:10px"><input id="syRepo" value="${esc((c && c.repo) || 'wenshen111/career-app-data')}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="私有仓库（用户名/仓库名）"><input id="syTok" type="password" autocomplete="off" placeholder="粘贴令牌 github_pat_…" aria-label="令牌"><button class="btn pri" style="justify-content:center">连接</button></form>
+  <p class="hint">令牌只存在这台设备上，不进备份文件。请用只能读写这一个仓库的令牌。</p><div id="syOut"></div></div>`;
+}
+function drawSyncBox() { const el = $('#syncBox'); if (el) el.innerHTML = syncBox(); }
+async function connectSync(repo, token) {
+  const out = $('#syOut'); repo = repo.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$|\/$/g, ''); token = token.trim();
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repo) || token.length < 20) { out.innerHTML = '<p class="hint">仓库写成「用户名/仓库名」，令牌整段粘贴进来。</p>'; return; }
+  out.innerHTML = '<div class="thinking"><i></i><i></i><i></i>连接中…</div>';
+  const c = {repo, token};
+  try {
+    const rr = await fetch(`${GH}/repos/${repo}`, {headers: {Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json'}});
+    if (rr.status === 401) throw new Error('令牌不对或已过期。'); if (!rr.ok) throw new Error(`找不到 ${repo}，或令牌没有它的权限。`);
+    if (!(await rr.json()).private) throw new Error(`${repo} 是公开仓库。数据要放私有仓库，请先在 GitHub 把它改成 Private。`);
+    const rf = await ghFile(c), remote = rf.body && rf.body.app === 'wsr4' ? rf.body : null, local = snapshot();
+    if (remote && hasData(remote.data) && hasData(local)) { // 两边都有东西：让她选
+      pendingSync = {c, rf, remote};
+      out.innerHTML = `<div class="card" style="padding:14px;margin-top:10px;background:var(--soft)"><h2>两边都有数据，用哪一份？</h2><div class="ovr">${BK.map(([k, n, g]) => `<b>${n}</b><span>本机 ${esc(bkSum(k, g()))}</span><span>云端 ${esc(bkSum(k, remote.data['wsr4-' + k]))}</span>`).join('')}</div><p class="hint">另一份会存成本机的留底，不会凭空消失。云端上次更新 ${esc(new Date(+remote.updated).toLocaleString('zh-CN'))}。</p>
+      <div class="btns"><button class="btn pri" id="syUseRemote">用云端的</button><button class="btn" id="syUseLocal">用本机的</button></div></div>`;
+      return;
+    }
+    syncPut(Object.assign(c, {base: 0, dirty: !remote || !hasData(remote.data), local: Date.now()}));
+    await syncNow(); drawSyncBox(); toast('自动同步连上了');
+  } catch (e) { out.innerHTML = `<p class="hint">${esc(e.message.startsWith('gh ') ? '没连上 GitHub，检查一下网络再试。' : e.message)}</p>`; }
+}
+let pendingSync = null;
+async function resolveFirst(useRemote) {
+  const p = pendingSync; if (!p) return; pendingSync = null;
+  try { localStorage.setItem('wsr4-sync-conflict', JSON.stringify({saved: Date.now(), kept: useRemote ? 'remote' : 'local', data: useRemote ? snapshot() : p.remote.data})); } catch (e) {}
+  if (useRemote) { applyData(p.remote.data); syncPut(Object.assign(p.c, {sha: p.rf.sha, base: +p.remote.updated, dirty: false, at: Date.now()})); }
+  else syncPut(Object.assign(p.c, {base: +p.remote.updated, dirty: true, local: Date.now()}));
+  await syncNow(useRemote ? undefined : 'push'); drawSyncBox(); toast(useRemote ? '用了云端的，已连上' : '用了本机的，已传上去');
+}
+function syncClick(t) {
+  if (t.closest('#syGo')) { syncNow(); toast('同步中…'); return true; }
+  const off = t.closest('#syOff'); if (off) { if (!off.dataset.armed) { off.dataset.armed = 1; off.textContent = '再点一次断开'; return true; } try { localStorage.removeItem('wsr4-sync'); } catch (e) {} setSync(false); drawSyncBox(); toast('这台设备不再同步，数据还在本机'); return true; }
+  if (t.closest('#syUseRemote')) { resolveFirst(true); return true; }
+  if (t.closest('#syUseLocal')) { resolveFirst(false); return true; }
+  return false;
+}
+if (syncCfg()) { setTimeout(() => syncNow(), 400); }
+addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncNow(); else if ((syncCfg() || {}).dirty) syncNow(); });
+
 /* ============ events ============ */
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if (!b) return; ui.tab = b.dataset.t; saveUi(); render(); scrollTo({top: 0}); });
 $('#fab').addEventListener('click', () => captureSheet());
@@ -742,7 +856,7 @@ function onClick(e) {
   }
   const fs = t.closest('[data-fs]'); if (fs) { setFeed(fs.dataset.id, fs.dataset.fs); closeSheet(); return; }
   const dl = t.closest('[data-delled]'); if (dl) { if (dl.dataset.armed) { L.entries = L.entries.filter(x => x.id !== dl.dataset.delled); save('ledger'); render(); } else { dl.dataset.armed = 1; dl.textContent = '删?'; setTimeout(() => { if (dl.isConnected) { delete dl.dataset.armed; dl.textContent = '×'; } }, 2500); } return; }
-  if (chatClick(t) || bkClick(t) || parkClick(t)) return;
+  if (chatClick(t) || bkClick(t) || parkClick(t) || syncClick(t)) return;
   const ex = t.closest('[data-ex]'); if (ex) { $('#capIn').value = ex.dataset.ex; $('#capIn').focus(); return; }
   const pk = t.closest('[data-pick]'); if (pk) { const a = capture.actions[+pk.dataset.pick]; if (pk.dataset.v === '__more') { const cands = matchItems($('#capIn').value || '').filter(x => x !== a.item && !a.alts.includes(x)).slice(0, 4); const pool = cands.length ? cands : D.items.filter(x => x.s === 'now' && x.id !== a.item && !a.alts.includes(x.id)).sort((p, q) => q.v - p.v).slice(0, 4).map(x => x.id); a.alts = [...a.alts, ...pool].slice(0, 6); } else a.item = pk.dataset.v; drawActs(); return; }
   const c2 = t.closest('[data-cat2]'); if (c2) { capture.actions[+c2.dataset.cat2].cat = c2.dataset.v; drawActs(); return; }
@@ -756,6 +870,7 @@ $('#sheet').addEventListener('click', onClick);
 $('#sheet').addEventListener('change', e => { if (e.target.id === 'bkFile' && e.target.files[0]) previewImport(e.target.files[0]); });
 $('#sheet').addEventListener('submit', e => {
   e.preventDefault();
+  if (e.target.id === 'syF') { connectSync($('#syRepo').value, $('#syTok').value); return; }
   if (e.target.id === 'capF') { const v = $('#capIn').value.trim(); if (v) { understand(v); if (chat) $('#capIn').value = ''; } }
   if (e.target.id === 'ledF') {
     const a = parseFloat($('#lAmt').value); if (!(a > 0)) { toast('先填金额'); return; }

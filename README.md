@@ -10,7 +10,7 @@
 
 ## 数据存在哪
 
-- 所有记录只存在**这台设备的浏览器**里（localStorage：`wsr4-state`、`wsr4-hist`、`wsr4-ledger`、`wsr4-model`、`wsr4-feed`）。
+- 所有记录存在**这台设备的浏览器**里（开了自动同步时，另有一份在你的私有仓库）（localStorage：`wsr4-state`、`wsr4-hist`、`wsr4-ledger`、`wsr4-model`、`wsr4-feed`）。
 - 仓库里**没有**任何个人数据，也没有任何密钥。
 - 换设备、换浏览器、清浏览器数据之前，先在 App 顶部点「备份」→「导出备份」，得到 `wsr4-backup-YYYYMMDD.json`；到新设备上「导入备份」即可。
 
@@ -29,7 +29,22 @@
 - 今日页多了「等结果 · 回头再说」一栏，情报站多了「等结果」分栏，随时能拉回。
 - 修炼项目只能「等结果」或「回头再说」，不能「不考虑」：那会改成功率，而这个仓库不改算法。
 
-本地跑测试：`npm i --no-save playwright && npx playwright install chromium && node tests/smoke.mjs`
+本地跑测试：`npm i --no-save playwright && npx playwright install chromium && node tests/smoke.mjs && node tests/sync.mjs`
+
+## v4.2 自动同步（换设备数据也在）
+
+数据存进**你自己的私有仓库** `wenshen111/career-app-data` 里的 `wsr4.json`，每台设备设置一次：
+
+1. 在 GitHub 新建仓库 `career-app-data`，选 **Private**。
+2. 建一个只能碰这个仓库的令牌：GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token。Repository access 选 *Only select repositories* → `career-app-data`；Permissions → Repository permissions → **Contents: Read and write**；其他都不给。
+3. App 顶部「备份」→「自动同步」，粘贴令牌，点「连接」。
+
+- 令牌只存在那台设备的浏览器里（`wsr4-sync`），不进备份文件，不进同步文件，不进这个公开仓库。
+- 打开 App、切回前台时先拉云端；本机改动 2–3 秒后自动传上去。
+- 两台设备都改过时，后改的算数，另一份留在本机 `wsr4-sync-conflict`，不会凭空消失。
+- 第一次连接时如果本机和云端都有数据，会让你选用哪一份。
+- 填的仓库如果是公开的，App 会拒绝连接。
+- 在 claude.ai 里打开时由 Claude 的云端同步，这里不用设置。
 
 ## 改动规则
 
