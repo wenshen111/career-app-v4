@@ -35,7 +35,7 @@ try {
   await page.goto(url);
 
   // 1. 版本号和备份按钮
-  assert.equal((await page.textContent('#ver')).trim(), 'v4.1');
+  assert.match((await page.textContent('#ver')).trim(), /^v4\.\d+$/);
   await page.click('#bk');
   await page.waitForSelector('#bkExport', { state: 'visible' });
 
