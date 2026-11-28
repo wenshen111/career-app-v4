@@ -33,10 +33,19 @@ assert.equal(M(61, { temp: 33 }), 'drizzle', '下雨时不算酷热');
 assert.equal(M(61, { wind: 90 }), 'cyclone');
 assert.equal(M(12345), 'sunny', '不认识的代码当晴');
 assert.equal(STATES.length, 16);
-for (const s of STATES) await fs.access(path.join(root, 'weather', 'bg', s.file + '.png'));
+// v3 素材：每种都有 layer_config.json，里面引用的 PNG / 纹理都在
+for (const s of STATES) {
+  const dir = path.join(root, 'weather', 'v3', s.file);
+  const cfg = JSON.parse(await fs.readFile(path.join(dir, 'layer_config.json'), 'utf8'));
+  assert.equal(cfg.id, s.id);
+  for (const l of cfg.layers) {
+    if (l.pngFile) await fs.access(path.join(dir, l.pngFile));
+    if (l.texture) await fs.access(path.join(root, 'weather', 'v3', 'textures', l.texture.split('/').pop()));
+  }
+}
 
 // 2. 浏览器
-const TYPES = { '.html': 'text/html; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.js': 'text/javascript', '.png': 'image/png', '.webp': 'image/webp' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.js': 'text/javascript', '.png': 'image/png', '.json': 'application/json' };
 const server = http.createServer(async (req, res) => {
   const p = path.join(root, decodeURIComponent(new URL(req.url, 'http://x').pathname));
   if (!p.startsWith(root)) { res.writeHead(403).end(); return; }
@@ -57,11 +66,19 @@ try {
   await page.goto(url);
   for (const s of STATES) {
     await page.selectOption('#pick', s.id);
-    await page.waitForFunction(id => { const r = document.querySelector(`.wx-root[data-state="${id}"]`); const i = r && r.querySelector('.wx-bg'); return i && i.complete && i.naturalWidth > 0; }, s.id);
+    await page.waitForFunction(id => !!document.querySelector(`.wx-root.on[data-state="${id}"]`), s.id, { timeout: 60000 });
+    // 所有图都真的解码了，且没有加载默认关闭的可读罩
+    assert.ok(await page.evaluate(() => [...document.querySelectorAll('.wx-root img')].every(i => i.complete && i.naturalWidth > 0)));
+    assert.ok(await page.evaluate(() => ![...document.querySelectorAll('.wx-root img')].some(i => /L90_/.test(i.src))));
     assert.equal((await page.textContent('#st')).trim(), s.name);
   }
-  await page.waitForTimeout(1000);
-  assert.equal(await page.locator('.wx-root').count(), 1, '旧层应该被移除');
+  await page.waitForTimeout(1200);
+  assert.equal(await page.locator('.wx-root').count(), 1, '旧场景应该被移除');
+  // 粒子层真的在动：两个时刻的雨层像素不同
+  await page.selectOption('#pick', 'downpour');
+  await page.waitForFunction(() => !!document.querySelector('.wx-root.on[data-state="downpour"]'), null, { timeout: 60000 });
+  const snap = t => page.evaluate(t => { const h = document.getElementById('sky').__wx; h.seek(t); return document.querySelector('.wx-root[data-state="downpour"] canvas').toDataURL(); }, t);
+  assert.notEqual(await snap(0.5), await snap(1.5));
   await ctx.close();
 
   // 2b. 定位成功 + 接口返回暴雨 → 显示暴雨、温度、风速，并写缓存
@@ -73,7 +90,7 @@ try {
   p2.on('pageerror', e => errors.push(String(e)));
   await p2.goto(url);
   await p2.click('#loc');
-  await p2.waitForFunction(() => document.getElementById('st').textContent === '暴雨');
+  await p2.waitForFunction(() => document.getElementById('st').textContent === '暴雨' && /实时/.test(document.getElementById('src').textContent), null, { timeout: 60000 });
   assert.match(await p2.textContent('#meta'), /9 °C · 风 22 km\/h/);
   assert.match(await p2.textContent('#src'), /实时/);
   const cache = JSON.parse(await p2.evaluate(() => localStorage.getItem('wsr4-weather')));
@@ -81,7 +98,7 @@ try {
   // 接口挂了 → 用上次结果
   fail = true;
   await p2.click('#refresh');
-  await p2.waitForFunction(() => /上次结果/.test(document.getElementById('src').textContent));
+  await p2.waitForFunction(() => /上次结果/.test(document.getElementById('src').textContent), null, { timeout: 60000 });
   assert.equal((await p2.textContent('#st')).trim(), '暴雨');
   await ctx2.close();
 
@@ -92,7 +109,7 @@ try {
   await p3.addInitScript(() => { navigator.geolocation.getCurrentPosition = (ok, err) => setTimeout(() => err({ code: 1, message: 'denied' }), 10); });
   await p3.goto(url);
   await p3.click('#loc');
-  await p3.waitForFunction(() => /用默认天气 · 定位被拒绝/.test(document.getElementById('src').textContent));
+  await p3.waitForFunction(() => /用默认天气 · 定位被拒绝/.test(document.getElementById('src').textContent), null, { timeout: 60000 });
   assert.match((await p3.textContent('#st')).trim(), /^晴(日|夜)$/);
   await ctx3.close();
 

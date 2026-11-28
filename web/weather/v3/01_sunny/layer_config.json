@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "sunny",
+  "name": "晴日",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "sunny__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/sunny__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L00__sky_color__base.svg"
+    },
+    {
+      "id": "sunny__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/sunny__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "sunny__L10__sun_halo__far",
+      "z": 10,
+      "component": "sun_halo",
+      "depth": "far",
+      "source": "layers/sunny__L10__sun_halo__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "宽幅日光晕；太阳本体和光束另分层。",
+      "pngFile": "L10_sun_halo_far.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L10__sun_halo__far.svg"
+    },
+    {
+      "id": "sunny__L11__sun_disc__far",
+      "z": 11,
+      "component": "sun_disc",
+      "depth": "far",
+      "source": "layers/sunny__L11__sun_disc__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "太阳圆面；原生矢量。",
+      "pngFile": "L11_sun_disc_far.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L11__sun_disc__far.svg"
+    },
+    {
+      "id": "sunny__L12__sun_rays__far",
+      "z": 12,
+      "component": "sun_rays",
+      "depth": "far",
+      "source": "layers/sunny__L12__sun_rays__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "breathe",
+        "periodSeconds": 14,
+        "minOpacity": 0.65
+      },
+      "description": "独立日光束，幅度克制，不旋转成魔法特效。",
+      "pngFile": "L12_sun_rays_far.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L12__sun_rays__far.svg"
+    },
+    {
+      "id": "sunny__L20__cloud_cirrus_far__far",
+      "z": 20,
+      "component": "cloud_cirrus_far",
+      "depth": "far",
+      "source": "layers/sunny__L20__cloud_cirrus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 110,
+        "dxPx": 34,
+        "dyPx": 5,
+        "phase": 0.2
+      },
+      "description": "高空薄云，沿画幅上缘自然延伸。",
+      "texture": "assets/textures/cloud_cirrus_far.png",
+      "placement": {
+        "x": -260,
+        "y": -360,
+        "width": 2040,
+        "height": 1360.0,
+        "opacity": 0.55,
+        "mirror": false,
+        "rotationDegrees": -7
+      },
+      "pngFile": "L20_cloud_cirrus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L20__cloud_cirrus_far__far.svg"
+    },
+    {
+      "id": "sunny__L40__cloud_cumulus_mid__near",
+      "z": 40,
+      "component": "cloud_cumulus_mid",
+      "depth": "near",
+      "source": "layers/sunny__L40__cloud_cumulus_mid__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 78,
+        "dxPx": -38,
+        "dyPx": 8,
+        "phase": 1.5
+      },
+      "description": "下缘斜向入画的积云。",
+      "texture": "assets/textures/cloud_cumulus_mid.png",
+      "placement": {
+        "x": -490,
+        "y": 2480,
+        "width": 2110,
+        "height": 1406.6666666666667,
+        "opacity": 0.58,
+        "mirror": false,
+        "rotationDegrees": -4
+      },
+      "pngFile": "L40_cloud_cumulus_mid_near.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L40__cloud_cumulus_mid__near.svg"
+    },
+    {
+      "id": "sunny__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/sunny__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/sunny/layers/sunny__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}

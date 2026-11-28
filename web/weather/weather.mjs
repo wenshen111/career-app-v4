@@ -4,8 +4,8 @@
 //   const w = await resolveWeather();            // 定位 + Open-Meteo，失败自动降级
 //   applyWeather(document.getElementById('sky'), w.state);
 //
-// 层级：容器里插入 .wx-root（position:absolute; inset:0; z-index:0）。
-//   底图 img → CSS 动效层 → Canvas 粒子层。UI 放在容器里 z-index ≥ 1 即可盖在上面。
+// 画面用 GPT 的 v3 分层素材（web/weather/v3/），按 layer_config.json 逐层叠加、按各层 motion 参数动。
+// 容器里插入 .wx-root（position:absolute; inset:0; z-index:0）；UI 放在容器里 z-index ≥ 1 即可盖在上面。
 // 这个文件在 import 时不碰 DOM，Node 里也能 import 来测映射。
 
 export const STATES = [
@@ -130,578 +130,255 @@ export async function resolveWeather({ fetchImpl, timeoutMs = 8000, geoTimeoutMs
   }
 }
 
-/* ───────────────────────── 动效层 ───────────────────────── */
+/* ───────────────────────── v3 分层场景 ─────────────────────────
+ * 接入按 v3/ENGINEERING/CLAUDE_HANDOFF.md：
+ *  - 只加载当前一种天气；切换时新场景加载完再淡入，旧场景随后释放（img 清空、canvas 归零）。
+ *  - 1440×3120 设计坐标整体 cover 到容器，不裁任何一层。
+ *  - static / breathe / twinkle / lightning 层用该层 PNG；
+ *    drift / swayRotate 的云层用原纹理 + placement 重建：PNG 版在画布左右边缘是被截断的，
+ *    直接平移会露出一条硬边，用纹理重建后云本来就越出画幅，往返漂移不会露边。
+ *  - particles 层：PNG 本身是 1440×1560 周期图案，用 canvas pattern 按速度偏移取模，无缝循环。
+ *  - 默认关闭的层（L90 可读罩）不加载。
+ */
 
-const IMG_W = 852, IMG_H = 1846;
-// 底图里太阳/月亮/气旋眼的位置（相对底图 0–1），用来对齐光晕
-const ANCHORS = {
-  sunny: [0.141, 0.046], night: [0.864, 0.098], heat: [0.8, 0.093], cyclone: [0.81, 0.14],
-  thunderstorm: [0.86, 0.11],
-};
-const BG_BASE = new URL('./bg/', import.meta.url).href;
+const V3 = new URL('./v3/', import.meta.url).href;
+const CW = 1440, CH = 3120;
+const TAU = Math.PI * 2;
 
 const CSS = `
-.wx-root{position:absolute;inset:0;overflow:hidden;z-index:var(--wx-z,0);pointer-events:none;contain:strict;
-  opacity:0;transition:opacity .7s ease;background:#7d9bbf}
+.wx-root{position:absolute;inset:0;overflow:hidden;z-index:var(--wx-z,0);pointer-events:none;contain:strict;opacity:0;transition:opacity .8s ease}
 .wx-root.on{opacity:1}
 .wx-root *{pointer-events:none}
-.wx-bg,.wx-bgc{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
-.wx-fx,.wx-cv{position:absolute;inset:0;width:100%;height:100%}
-.wx-l{position:absolute;will-change:transform,opacity}
-.wx-kb{animation:wx-kb 48s ease-in-out infinite alternate;transform-origin:50% 30%}
-@keyframes wx-kb{from{transform:scale(1.02) translate3d(0,0,0)}to{transform:scale(1.07) translate3d(-1.2%,0.6%,0)}}
-.wx-pan{animation:wx-pan 22s ease-in-out infinite alternate;transform-origin:50% 50%}
-@keyframes wx-pan{from{transform:scale(1.06) translate3d(1.6%,0,0)}to{transform:scale(1.06) translate3d(-1.6%,0,0)}}
-.wx-drift{left:0;width:200%;background-repeat:repeat-x;background-size:50% 100%;animation:wx-drift linear infinite}
-@keyframes wx-drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
-.wx-drift.rev{animation-name:wx-drift-r}
-@keyframes wx-drift-r{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}
-.wx-glow{border-radius:50%;transform:translate(-50%,-50%);animation:wx-breathe 6s ease-in-out infinite}
-@keyframes wx-breathe{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.75}50%{transform:translate(-50%,-50%) scale(1.12);opacity:1}}
-.wx-rays{border-radius:50%;transform:translate(-50%,-50%);animation:wx-spin 140s linear infinite}
-@keyframes wx-spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-.wx-rays.ccw{animation-direction:reverse}
-.wx-rise{animation:wx-rise 18s ease-in-out infinite}
-@keyframes wx-rise{0%{transform:translate3d(0,12%,0);opacity:0}35%,65%{opacity:1}100%{transform:translate3d(0,-14%,0);opacity:0}}
-.wx-dim{inset:0;animation:wx-dim 14s ease-in-out infinite}
-@keyframes wx-dim{0%,100%{opacity:0}50%{opacity:1}}
-.wx-flash{inset:0;opacity:0;mix-blend-mode:screen}
-.wx-heatwave{left:0;right:0;bottom:0;height:200%;animation:wx-heatup 7s linear infinite}
-@keyframes wx-heatup{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-50%,0)}}
-@media (prefers-reduced-motion: reduce){.wx-root[data-motion=auto] .wx-l,.wx-root[data-motion=auto] .wx-bg{animation:none!important}}
+.wx-scene{position:absolute;left:0;top:0;width:${CW}px;height:${CH}px;transform-origin:0 0}
+.wx-ly{position:absolute;left:0;top:0;width:${CW}px;height:${CH}px;will-change:transform,opacity}
+.wx-ly>img,img.wx-ly{position:absolute;display:block;max-width:none;user-select:none}
 `;
+function ensureStyle() {
+  if (document.getElementById('wx-style')) return;
+  const st = document.createElement('style'); st.id = 'wx-style'; st.textContent = CSS; document.head.appendChild(st);
+}
 
-let heatFilterId = null;
-function ensureGlobals() {
-  if (!document.getElementById('wx-style')) {
-    const st = document.createElement('style'); st.id = 'wx-style'; st.textContent = CSS;
-    document.head.appendChild(st);
+const cfgCache = new Map();
+function loadConfig(st) {
+  if (!cfgCache.has(st.id)) {
+    cfgCache.set(st.id, fetch(V3 + st.file + '/layer_config.json').then(r => {
+      if (!r.ok) throw new Error('layer_config ' + r.status); return r.json();
+    }).catch(e => { cfgCache.delete(st.id); throw e; }));
   }
-  if (!heatFilterId) {
-    heatFilterId = 'wx-heat';
-    // 低频热浪扭曲：噪声频率在 0.006–0.012 间慢慢变，位移幅度很小
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
-    svg.setAttribute('aria-hidden', 'true'); svg.style.position = 'absolute';
-    svg.innerHTML = `<filter id="${heatFilterId}" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.04" numOctaves="1" seed="3" result="n">
-        <animate attributeName="baseFrequency" dur="9s" values="0.006 0.04;0.009 0.055;0.006 0.04" repeatCount="indefinite"/>
-      </feTurbulence>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>`;
-    document.body.appendChild(svg);
+  return cfgCache.get(st.id);
+}
+function loadImg(url) {
+  const im = new Image(); im.decoding = 'async'; im.alt = ''; im.draggable = false; im.src = url;
+  return (im.decode ? im.decode() : new Promise((ok, no) => { im.onload = ok; im.onerror = no; }))
+    .then(() => im, () => { throw new Error('图层加载失败 ' + url.split('/').slice(-2).join('/')); });
+}
+
+// 闪电：默认 12 秒一轮，5.2 秒起两次短脉冲（同参考播放器），再加一点余光衰减；只亮闪电本层，不全屏白闪
+function flash(d) {
+  if (d < 0) return 0;
+  if (d < 0.07) return 1;
+  if (d < 0.16) return 1 - (d - 0.07) / 0.09 * 0.8;
+  if (d < 0.22) return 0.6;
+  if (d < 0.62) return 0.6 * (1 - (d - 0.22) / 0.4);
+  return 0;
+}
+
+// 星星分三组各自眨：同一张星点 PNG 叠三份，每份用随机格子遮罩只露三分之一的星
+const twinkleMasks = [];
+function twinkleMask(k) {
+  if (twinkleMasks.length) return twinkleMasks[k];
+  const cell = 40, n = 11, size = cell * n;              // 440 设计像素一块，平铺
+  const cs = [0, 1, 2].map(() => { const c = document.createElement('canvas'); c.width = c.height = size; return c; });
+  let seed = 7;
+  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const g = cs[(rand() * 3) | 0].getContext('2d'); g.fillStyle = '#000'; g.fillRect(x * cell, y * cell, cell, cell);
   }
+  cs.forEach(c => twinkleMasks.push(c.toDataURL('image/png')));
+  return twinkleMasks[k];
 }
 
-const rnd = (a, b) => a + Math.random() * (b - a);
-const el = (cls, style = {}) => { const d = document.createElement('div'); d.className = cls; Object.assign(d.style, style); return d; };
-
-// 程序生成的软云/雾纹理（横向可无缝平铺），生成一次后缓存成 dataURL
-const texCache = {};
-function texture(kind) {
-  if (texCache[kind]) return texCache[kind];
-  const W = 768, H = kind === 'mist' ? 192 : 320;
-  const c = document.createElement('canvas'); c.width = W; c.height = H;
-  const g = c.getContext('2d');
-  const puff = (x, y, r, a) => {
-    for (const dx of [-W, 0, W]) {
-      const gr = g.createRadialGradient(x + dx, y, 0, x + dx, y, r);
-      gr.addColorStop(0, `rgba(255,255,255,${a})`); gr.addColorStop(1, 'rgba(255,255,255,0)');
-      g.fillStyle = gr; g.beginPath(); g.arc(x + dx, y, r, 0, Math.PI * 2); g.fill();
-    }
-  };
-  if (kind === 'mist') {
-    g.save(); g.scale(1, 0.35);
-    for (let i = 0; i < 46; i++) puff(rnd(0, W), rnd(H * 0.9, H * 1.95), rnd(50, 130), rnd(0.12, 0.28));
-    g.restore();
-  } else if (kind === 'streak') { // 被风拉长的云丝
-    g.save(); g.scale(1, 0.22);
-    for (let i = 0; i < 40; i++) puff(rnd(0, W), rnd(H * 0.6, H * 4), rnd(40, 110), rnd(0.15, 0.35));
-    g.restore();
-  } else { // 'cloud'：几簇团状云
-    for (let k = 0; k < 5; k++) {
-      const cx = rnd(0, W), cy = rnd(H * 0.3, H * 0.7), n = 9 + (Math.random() * 6 | 0);
-      for (let i = 0; i < n; i++) puff(cx + rnd(-110, 110), cy + rnd(-35, 30), rnd(30, 75), rnd(0.18, 0.4));
-    }
-  }
-  return (texCache[kind] = c.toDataURL('image/png'));
+let filterSeq = 0;
+function heatFilter() {
+  const id = 'wx-heat-' + (++filterSeq);
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
+  svg.style.position = 'absolute';
+  // 与 v3 的 heat__L75 定义一致：最大约 5 设计像素位移
+  svg.innerHTML = `<filter id="${id}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency=".004 .025" numOctaves="2" seed="31" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter>`;
+  document.body.appendChild(svg);
+  return { id, svg, turb: svg.querySelector('feTurbulence') };
 }
 
-// 冻雨：玻璃上的冰花（静态，生成一次）
-function frostCanvas(w, h) {
-  const c = document.createElement('canvas'); c.width = Math.max(1, w | 0); c.height = Math.max(1, h | 0);
-  const g = c.getContext('2d');
-  const vg = g.createRadialGradient(w / 2, h * 0.45, Math.min(w, h) * 0.35, w / 2, h * 0.5, Math.max(w, h) * 0.75);
-  vg.addColorStop(0, 'rgba(235,245,255,0)'); vg.addColorStop(1, 'rgba(235,245,255,0.38)');
-  g.fillStyle = vg; g.fillRect(0, 0, w, h);
-  // 六角冰晶：越靠近四边越多越大，中间留白
-  g.lineCap = 'round';
-  const crystal = (x, y, r, rot) => {
-    g.beginPath();
-    for (let k = 0; k < 6; k++) {
-      const a = rot + k * Math.PI / 3, ca = Math.cos(a), sa = Math.sin(a);
-      g.moveTo(x, y); g.lineTo(x + ca * r, y + sa * r);
-      for (const f of [0.45, 0.7]) { // 每条臂上两对小枝
-        const bx = x + ca * r * f, by = y + sa * r * f, l = r * (1 - f) * 0.7;
-        for (const s of [-1, 1]) { const b = a + s * Math.PI / 3; g.moveTo(bx, by); g.lineTo(bx + Math.cos(b) * l, by + Math.sin(b) * l); }
-      }
-    }
-    g.stroke();
-  };
-  const m = Math.min(w, h), band = m * 0.3, n = Math.round((w + h) / 2.6);
-  for (let i = 0; i < n; i++) {
-    const d = Math.pow(Math.random(), 2.2) * band, t = Math.random(), side = (Math.random() * 4) | 0;
-    const [x, y] = side === 0 ? [t * w, h - d] : side === 1 ? [d, t * h] : side === 2 ? [w - d, t * h] : [t * w, d];
-    const k = 1 - d / band;
-    g.strokeStyle = `rgba(245,250,255,${(0.12 + 0.26 * k).toFixed(3)})`; g.lineWidth = 0.5 + 0.4 * k;
-    crystal(x, y, 1.5 + rnd(2, 8) * k * k, rnd(0, 1.05));
-  }
-  return c;
-}
+const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── 粒子系统：每个都是 { reset(W,H), update(dt,t), draw(g) }，粒子出屏就地回收重用 ── */
-
-function rainSys({ dens, max, speed, angle = 0, len, width, alpha, color = '200,220,245' }) {
-  let P = [], W = 0, H = 0;
-  const sin = Math.sin(angle * Math.PI / 180), cos = Math.cos(angle * Math.PI / 180);
-  const spawn = (p, first) => {
-    p.v = rnd(speed[0], speed[1]); p.l = rnd(len[0], len[1]);
-    const span = H * Math.abs(sin / cos);
-    p.x = sin > 0 ? rnd(-span, W) : sin < 0 ? rnd(0, W + span) : rnd(0, W);
-    p.y = first ? rnd(-p.l, H) : rnd(-H * 0.25, -p.l);
-  };
-  return {
-    reset(w, h, q) { W = w; H = h; const n = Math.min(max, Math.round(dens * w * h / 1e5 * q)); P = []; for (let i = 0; i < n; i++) { const p = {}; spawn(p, true); P.push(p); } },
-    update(dt) { for (const p of P) { p.x += p.v * sin * dt; p.y += p.v * cos * dt; if (p.y - p.l > H || p.x < -60 || p.x > W + 60) spawn(p, false); } },
-    draw(g) {
-      g.strokeStyle = `rgba(${color},${alpha})`; g.lineWidth = width; g.lineCap = 'round';
-      g.beginPath();
-      for (const p of P) { g.moveTo(p.x, p.y); g.lineTo(p.x - sin * p.l, p.y - cos * p.l); }
-      g.stroke();
-    },
-  };
-}
-
-function snowSys({ dens, max, r, vy, sway, wind = 0, alpha, gust = 0 }) {
-  let P = [], W = 0, H = 0;
-  const spawn = (p, first) => {
-    p.r = rnd(r[0], r[1]); p.vy = rnd(vy[0], vy[1]) * (0.6 + p.r / r[1] * 0.4);
-    p.ph = rnd(0, 6.28); p.f = rnd(0.6, 1.6); p.a = rnd(sway[0], sway[1]);
-    p.y = first ? rnd(0, H) : rnd(-40, -5);
-    p.x = wind > 0 && !first ? rnd(-W * 0.6, W) : rnd(0, W);
-    if (wind > 0 && !first && Math.random() < 0.5) { p.x = rnd(-40, -5); p.y = rnd(0, H); }
-  };
-  return {
-    reset(w, h, q) { W = w; H = h; const n = Math.min(max, Math.round(dens * w * h / 1e5 * q)); P = []; for (let i = 0; i < n; i++) { const p = {}; spawn(p, true); P.push(p); } },
-    update(dt, t) {
-      const gw = wind * (1 + gust * Math.sin(t * 0.7));
-      for (const p of P) {
-        p.y += p.vy * dt;
-        p.x += (Math.sin(t * p.f + p.ph) * p.a + gw * (p.r / r[1])) * dt;
-        if (p.y > H + 8 || p.x > W + 40 || p.x < -60) spawn(p, false);
-      }
-    },
-    draw(g) {
-      g.fillStyle = `rgba(255,255,255,${alpha})`; g.beginPath();
-      for (const p of P) { g.moveTo(p.x + p.r, p.y); g.arc(p.x, p.y, p.r, 0, 6.2832); }
-      g.fill();
-    },
-  };
-}
-
-function hailSys({ dens, max }) {
-  let P = [], W = 0, H = 0;
-  const spawn = (p, first) => {
-    p.x = rnd(0, W); p.y = first ? rnd(-H, H * 0.7) : rnd(-80, -10);
-    p.vy = rnd(520, 760); p.vx = rnd(-20, 20); p.r = rnd(1.4, 2.6);
-    p.ground = rnd(H * 0.72, H * 0.99); p.b = 0; p.fade = 1;
-  };
-  return {
-    reset(w, h, q) { W = w; H = h; const n = Math.min(max, Math.round(dens * w * h / 1e5 * q)); P = []; for (let i = 0; i < n; i++) { const p = {}; spawn(p, true); P.push(p); } },
-    update(dt) {
-      for (const p of P) {
-        p.vy += 1400 * dt; p.y += p.vy * dt; p.x += p.vx * dt;
-        if (p.y >= p.ground && p.vy > 0) {
-          p.y = p.ground; p.b++;
-          p.vy = -p.vy * (p.b === 1 ? 0.32 : 0.22); p.vx = rnd(-70, 70);
-        }
-        if (p.b >= 2) p.fade -= dt * 2.6;
-        if (p.fade <= 0 || p.x < -20 || p.x > W + 20) spawn(p, false);
-      }
-    },
-    draw(g) {
-      g.strokeStyle = '#fff'; g.lineCap = 'round';
-      for (const p of P) {
-        g.globalAlpha = 0.85 * Math.max(0, p.fade); g.lineWidth = p.r * 2;
-        const tail = Math.min(3, Math.abs(p.vy) * 0.004);
-        g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx * 0.008, p.y - Math.sign(p.vy) * tail); g.stroke();
-      }
-      g.globalAlpha = 1;
-    },
-  };
-}
-
-function starSys({ count, top = 0.62 }) {
-  let P = [];
-  return {
-    reset(w, h, q) {
-      P = []; const n = Math.round(count * Math.min(1.4, w * h / (390 * 844)) * Math.max(q, 0.6));
-      for (let i = 0; i < n; i++) {
-        const big = Math.random() < 0.12;
-        P.push({ x: rnd(0, w), y: Math.pow(Math.random(), 1.4) * h * top, r: big ? rnd(1.3, 1.9) : rnd(0.5, 1.1),
-          base: rnd(0.25, 0.55), amp: rnd(0.25, 0.45), w: 6.2832 / rnd(1.6, 6.5), ph: rnd(0, 6.28), big });
-      }
-    },
-    update() {},
-    draw(g, t) {
-      g.fillStyle = '#fffbea';
-      for (const s of P) {
-        const a = Math.max(0, Math.min(1, s.base + s.amp * Math.sin(t * s.w + s.ph)));
-        g.globalAlpha = a; g.beginPath(); g.arc(s.x, s.y, s.r, 0, 6.2832); g.fill();
-        if (s.big && a > 0.6) { // 亮的时候闪一下十字光芒
-          g.globalAlpha = (a - 0.6) * 1.6; g.fillRect(s.x - s.r * 3.2, s.y - 0.35, s.r * 6.4, 0.7); g.fillRect(s.x - 0.35, s.y - s.r * 3.2, 0.7, s.r * 6.4);
-        }
-      }
-      g.globalAlpha = 1;
-    },
-  };
-}
-
-function streakSys({ count, speed, len, alpha, color = '255,255,255', yRange = [0, 1], angle = 0 }) {
-  let P = [], W = 0, H = 0;
-  const spawn = (p, first) => {
-    p.l = rnd(len[0], len[1]); p.v = rnd(speed[0], speed[1]); p.life = rnd(1.2, 2.6); p.age = first ? rnd(0, p.life) : 0;
-    p.x = rnd(-p.l, W * 0.9); p.y = rnd(H * yRange[0], H * yRange[1]); p.c = rnd(-0.12, 0.12); p.w = rnd(0.6, 1.4);
-  };
-  const tan = Math.tan(angle * Math.PI / 180);
-  return {
-    reset(w, h, q) { W = w; H = h; P = []; const n = Math.round(count * Math.max(q, 0.5)); for (let i = 0; i < n; i++) { const p = {}; spawn(p, true); P.push(p); } },
-    update(dt) { for (const p of P) { p.age += dt; p.x += p.v * dt; p.y += p.v * tan * dt; if (p.age > p.life || p.x > W + 20) spawn(p, false); } },
-    draw(g) {
-      g.strokeStyle = `rgb(${color})`; g.lineCap = 'round';
-      for (const p of P) {
-        g.globalAlpha = alpha * Math.sin(Math.PI * Math.min(1, p.age / p.life)); g.lineWidth = p.w;
-        g.beginPath(); g.moveTo(p.x, p.y);
-        g.quadraticCurveTo(p.x + p.l * 0.5, p.y + p.l * p.c, p.x + p.l, p.y + p.l * tan); g.stroke();
-      }
-      g.globalAlpha = 1;
-    },
-  };
-}
-
-function dustSys({ dens, max, colors, vx, vy, r, alpha }) {
-  let P = [], W = 0, H = 0;
-  const spawn = (p, first) => {
-    p.r = rnd(r[0], r[1]); p.vx = rnd(vx[0], vx[1]) * (0.5 + p.r / r[1]); p.vy = rnd(vy[0], vy[1]);
-    p.ph = rnd(0, 6.28); p.c = (Math.random() * colors.length) | 0;
-    if (first) { p.x = rnd(0, W); p.y = rnd(0, H); }
-    else if (Math.random() < H / (W + H)) { p.x = rnd(-30, -5); p.y = rnd(-H * 0.2, H); }
-    else { p.x = rnd(-W * 0.3, W); p.y = rnd(-30, -5); }
-  };
-  return {
-    reset(w, h, q) { W = w; H = h; const n = Math.min(max, Math.round(dens * w * h / 1e5 * q)); P = []; for (let i = 0; i < n; i++) { const p = {}; spawn(p, true); P.push(p); } },
-    update(dt, t) {
-      for (const p of P) {
-        p.x += (p.vx + Math.sin(t * 1.3 + p.ph) * 14) * dt; p.y += (p.vy + Math.cos(t * 0.9 + p.ph) * 8) * dt;
-        if (p.x > W + 20 || p.y > H + 20 || p.y < -60) spawn(p, false);
-      }
-    },
-    draw(g) {
-      for (let k = 0; k < colors.length; k++) {
-        g.fillStyle = `rgba(${colors[k]},${alpha})`; g.beginPath();
-        for (const p of P) if (p.c === k) { g.moveTo(p.x + p.r, p.y); g.arc(p.x, p.y, p.r, 0, 6.2832); }
-        g.fill();
-      }
-    },
-  };
-}
-
-// 气旋：粒子绕眼螺旋向内（北半球逆时针），越靠近眼越快
-function spiralSys({ count, anchor, alpha }) {
-  let P = [], W = 0, H = 0, cx = 0, cy = 0, R = 0;
-  const spawn = (p, first) => {
-    p.r = first ? rnd(R * 0.08, R) : rnd(R * 0.75, R); p.th = rnd(0, 6.2832);
-    p.k = rnd(0.8, 1.25); p.in = rnd(10, 26); p.w = rnd(0.6, 1.6);
-  };
-  return {
-    reset(w, h, q, env) {
-      W = w; H = h; [cx, cy] = env.pt(...anchor); R = Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)) * 1.05;
-      P = []; const n = Math.round(count * Math.max(q, 0.5)); for (let i = 0; i < n; i++) { const p = {}; spawn(p, true); P.push(p); }
-    },
-    update(dt) {
-      for (const p of P) {
-        const om = 0.9 * p.k * Math.pow(R * 0.12 / Math.max(p.r, R * 0.04), 0.7);
-        p.om = om; p.th -= om * dt; p.r -= p.in * dt * (1 + 60 / p.r);
-        if (p.r < R * 0.04) spawn(p, false);
-      }
-    },
-    draw(g) {
-      g.strokeStyle = `rgba(255,255,255,${alpha})`; g.lineCap = 'round';
-      for (let b = 0; b < 2; b++) {
-        g.lineWidth = b ? 1.6 : 0.8; g.beginPath();
-        for (const p of P) {
-          if ((p.w > 1.1) !== !!b) continue;
-          const arc = Math.min(0.45, p.om * 0.22);
-          g.moveTo(cx + Math.cos(p.th) * p.r, cy + Math.sin(p.th) * p.r);
-          g.arc(cx, cy, p.r, p.th, p.th + arc);
-        }
-        g.stroke();
-      }
-    },
-  };
-}
-
-// 雷暴：1–8 秒随机一次闪光；六成概率在画面上方画一道分叉闪电
-function lightningSys(flashEl) {
-  let W = 0, H = 0, next = rnd(1, 3), bolt = null, boltAge = 0;
-  const makeBolt = () => {
-    const segs = []; let x = rnd(W * 0.35, W * 0.95), y = 0; const end = rnd(H * 0.22, H * 0.42);
-    const path = [[x, y]];
-    while (y < end) { x += rnd(-18, 18); y += rnd(10, 24); path.push([x, y]); }
-    segs.push(path);
-    for (let i = 0; i < 3; i++) {
-      const s = path[(rnd(0.2, 0.8) * path.length) | 0]; let [bx, by] = s; const dir = Math.random() < 0.5 ? -1 : 1;
-      const br = [[bx, by]]; const n = 3 + (Math.random() * 4 | 0);
-      for (let k = 0; k < n; k++) { bx += dir * rnd(4, 16); by += rnd(8, 18); br.push([bx, by]); }
-      segs.push(br);
-    }
-    return segs;
-  };
-  const strike = () => {
-    if (flashEl.animate) flashEl.animate(
-      [{ opacity: 0 }, { opacity: 0.75, offset: 0.08 }, { opacity: 0.1, offset: 0.2 }, { opacity: 0.55, offset: 0.3 }, { opacity: 0 }],
-      { duration: 650, easing: 'ease-out' });
-    if (Math.random() < 0.6) { bolt = makeBolt(); boltAge = 0; }
-  };
-  return {
-    reset(w, h) { W = w; H = h; bolt = null; },
-    update(dt) { next -= dt; if (next <= 0) { strike(); next = rnd(1, 8); } if (bolt) { boltAge += dt; if (boltAge > 0.45) bolt = null; } },
-    draw(g) {
-      if (!bolt) return;
-      const a = boltAge < 0.06 ? 1 : boltAge < 0.12 ? 0.3 : boltAge < 0.2 ? 0.9 : Math.max(0, 1 - (boltAge - 0.2) / 0.25);
-      g.lineJoin = 'round'; g.lineCap = 'round';
-      for (const [lw, col, al] of [[7, '200,170,255', 0.18], [2.2, '240,235,255', 0.95]]) {
-        g.strokeStyle = `rgba(${col},${al * a})`;
-        bolt.forEach((seg, i) => { g.lineWidth = i ? lw * 0.5 : lw; g.beginPath(); seg.forEach(([x, y], k) => k ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); });
-      }
-    },
-  };
-}
-
-/* ── 每种天气的配方 ── */
-// css(layer helpers) 往 fx 层里放 DOM 动效；sys 返回粒子系统
-function recipe(id, L) {
-  const R = { kb: false, pan: false, sys: [] };
-  const flash = () => { const f = L.add('wx-l wx-flash', { background: 'radial-gradient(120% 70% at 75% 8%, rgba(225,215,255,.95), rgba(170,160,230,.35) 60%, rgba(120,110,180,0) 100%)' }); return f; };
-  switch (id) {
-    case 'sunny':
-      R.kb = true;
-      L.anchored('sunny', 'wx-l wx-rays', 'min(150vmax,1400px)', { background: 'repeating-conic-gradient(from 0deg, rgba(255,246,214,.16) 0deg 3deg, rgba(255,246,214,0) 3deg 11deg)', WebkitMaskImage: 'radial-gradient(circle, #000 0%, rgba(0,0,0,.5) 25%, transparent 60%)', maskImage: 'radial-gradient(circle, #000 0%, rgba(0,0,0,.5) 25%, transparent 60%)' });
-      L.anchored('sunny', 'wx-l wx-glow', 'min(70vmin,380px)', { background: 'radial-gradient(circle, rgba(255,250,225,.75), rgba(255,236,170,.25) 40%, rgba(255,236,170,0) 70%)' });
-      L.add('wx-l wx-rise', { left: '-10%', right: '-10%', top: '45%', height: '65%', background: `url(${texture('mist')}) center/100% 100%`, opacity: 0.6 });
-      R.sys.push(dustSys({ dens: 1.2, max: 30, colors: ['255,244,210'], vx: [-4, 6], vy: [-14, -6], r: [0.8, 2], alpha: 0.5 }));
-      break;
-    case 'night':
-      L.anchored('night', 'wx-l wx-glow', 'min(56vmin,300px)', { background: 'radial-gradient(circle, rgba(255,246,210,.45), rgba(200,210,255,.14) 45%, rgba(200,210,255,0) 70%)', animationDuration: '7s' });
-      R.sys.push(starSys({ count: 70 }));
-      break;
-    case 'partly_cloudy':
-      R.kb = true;
-      L.drift('cloud', { top: '-6%', height: '40%', opacity: 0.4 }, 110);
-      L.drift('cloud', { top: '66%', height: '36%', opacity: 0.3 }, 150, true);
-      break;
-    case 'overcast':
-      R.kb = true;
-      L.add('wx-l wx-dim', { background: 'linear-gradient(rgba(38,48,64,.26), rgba(38,48,64,.12))' });
-      L.drift('mist', { top: '20%', height: '50%', opacity: 0.35 }, 200);
-      break;
-    case 'fog':
-      R.kb = true;
-      L.bgClone({ filter: 'blur(5px)', animation: 'wx-dim 9s ease-in-out infinite' });
-      L.drift('mist', { top: '8%', height: '34%', opacity: 0.7 }, 75);
-      L.drift('mist', { top: '38%', height: '30%', opacity: 0.6 }, 100, true);
-      L.drift('mist', { top: '64%', height: '40%', opacity: 0.75 }, 60);
-      break;
-    case 'drizzle':
-      L.drift('mist', { top: '50%', height: '50%', opacity: 0.35 }, 90);
-      R.sys.push(rainSys({ dens: 9, max: 90, speed: [380, 480], angle: 0, len: [9, 15], width: 0.8, alpha: 0.42 }));
-      break;
-    case 'downpour':
-      L.add('wx-l wx-dim', { background: 'rgba(25,40,60,.18)', animationDuration: '10s' });
-      L.drift('mist', { top: '45%', height: '60%', opacity: 0.4 }, 40);
-      R.sys.push(rainSys({ dens: 28, max: 260, speed: [900, 1150], angle: 14, len: [24, 40], width: 0.8, alpha: 0.32 }));
-      R.sys.push(rainSys({ dens: 12, max: 110, speed: [1250, 1500], angle: 15, len: [38, 60], width: 1.4, alpha: 0.42 }));
-      break;
-    case 'thunderstorm': {
-      const f = flash();
-      L.add('wx-l wx-dim', { background: 'rgba(30,24,50,.2)', animationDuration: '12s' });
-      R.sys.push(rainSys({ dens: 24, max: 230, speed: [950, 1200], angle: 10, len: [24, 40], width: 0.8, alpha: 0.3, color: '210,210,245' }));
-      R.sys.push(rainSys({ dens: 9, max: 90, speed: [1300, 1550], angle: 11, len: [36, 56], width: 1.3, alpha: 0.38, color: '210,210,245' }));
-      R.sys.push(lightningSys(f));
-      break;
-    }
-    case 'snow':
-      R.sys.push(snowSys({ dens: 9, max: 90, r: [0.8, 1.6], vy: [22, 40], sway: [8, 18], alpha: 0.55 }));
-      R.sys.push(snowSys({ dens: 5, max: 50, r: [1.8, 3.2], vy: [36, 60], sway: [14, 30], alpha: 0.85 }));
-      break;
-    case 'blizzard':
-      L.drift('mist', { top: '0%', height: '60%', opacity: 0.55 }, 14);
-      L.drift('mist', { top: '45%', height: '60%', opacity: 0.6 }, 10);
-      R.sys.push(snowSys({ dens: 30, max: 300, r: [0.7, 1.6], vy: [90, 160], sway: [10, 25], wind: 340, gust: 0.35, alpha: 0.6 }));
-      R.sys.push(snowSys({ dens: 9, max: 90, r: [1.8, 3], vy: [120, 200], sway: [10, 30], wind: 480, gust: 0.35, alpha: 0.85 }));
-      R.sys.push(streakSys({ count: 22, speed: [700, 950], len: [60, 140], alpha: 0.35, angle: 12 }));
-      break;
-    case 'hail':
-      R.sys.push(rainSys({ dens: 8, max: 80, speed: [900, 1100], angle: 6, len: [20, 32], width: 0.7, alpha: 0.25 }));
-      R.sys.push(hailSys({ dens: 6, max: 60 }));
-      break;
-    case 'freezing_rain':
-      L.frost();
-      R.sys.push(rainSys({ dens: 14, max: 140, speed: [520, 640], angle: 4, len: [12, 20], width: 0.75, alpha: 0.42, color: '225,240,255' }));
-      break;
-    case 'wind':
-      R.pan = true;
-      L.drift('streak', { top: '0%', height: '45%', opacity: 0.55 }, 16);
-      L.drift('streak', { top: '50%', height: '40%', opacity: 0.4 }, 22);
-      R.sys.push(streakSys({ count: 26, speed: [380, 620], len: [80, 200], alpha: 0.5, angle: -4 }));
-      break;
-    case 'dust':
-      R.pan = true;
-      L.drift('mist', { top: '10%', height: '60%', opacity: 0.45, filter: 'sepia(1) saturate(2.2) hue-rotate(-12deg)' }, 26);
-      L.add('wx-l wx-dim', { background: 'rgba(190,120,50,.16)', animationDuration: '9s' });
-      R.sys.push(dustSys({ dens: 22, max: 220, colors: ['214,150,80', '236,190,120', '180,110,55'], vx: [120, 220], vy: [20, 60], r: [0.7, 2.2], alpha: 0.6 }));
-      R.sys.push(dustSys({ dens: 2.5, max: 26, colors: ['230,170,100'], vx: [80, 140], vy: [10, 40], r: [5, 11], alpha: 0.12 }));
-      break;
-    case 'heat':
-      L.anchored('heat', 'wx-l wx-glow', 'min(80vmin,420px)', { background: 'radial-gradient(circle, rgba(255,248,215,.7), rgba(255,210,140,.22) 40%, rgba(255,210,140,0) 70%)', animationDuration: '4.5s' });
-      L.heatShimmer(0.4);
-      L.heatwave();
-      break;
-    case 'cyclone':
-      L.anchored('cyclone', 'wx-l wx-rays ccw', 'min(220vmax,2000px)', { background: `url(${texture('streak')}) center/50% 50%`, opacity: 0.35, animationDuration: '50s', WebkitMaskImage: 'radial-gradient(circle, #000 15%, transparent 65%)', maskImage: 'radial-gradient(circle, #000 15%, transparent 65%)' });
-      L.drift('streak', { top: '55%', height: '45%', opacity: 0.45 }, 9, true);
-      R.sys.push(spiralSys({ count: 170, anchor: ANCHORS.cyclone, alpha: 0.42 }));
-      break;
-  }
-  return R;
-}
-
-/* ── 装配 ── */
-
-export function applyWeather(container, stateId, { motion = 'auto', onQuality } = {}) {
+/**
+ * 挂上一种天气。立即返回 handle，素材加载完才淡入；加载期间旧画面保持不动。
+ *   handle.ready      Promise，加载完成（失败会 reject，旧画面保留）
+ *   handle.setPaused(true)  停在静态底图（各层回到原位、闪电关）
+ *   handle.destroy()
+ * opts.motion: 'auto'（跟随系统「减少动态」）| 'on' | 'off'
+ */
+export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
   if (!container) throw new Error('applyWeather 需要一个容器');
-  ensureGlobals();
+  ensureStyle();
   const st = BY_ID[stateId] || BY_ID.sunny;
-  const prev = container.__wx;
-  if (prev) prev.destroy(true);
   if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
 
-  const reduce = motion === 'off' || (motion === 'auto' && matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const root = el('wx-root'); root.dataset.state = st.id; root.dataset.motion = motion;
-  const bg = document.createElement('img'); bg.className = 'wx-bg'; bg.alt = ''; bg.decoding = 'async';
-  bg.onerror = () => { if (!bg.dataset.fb) { bg.dataset.fb = '1'; bg.src = BG_BASE + st.file + '.png'; } };
-  bg.src = BG_BASE + st.file + '.webp';
-  const fx = el('wx-fx'); const cv = document.createElement('canvas'); cv.className = 'wx-cv';
-  root.append(bg, fx, cv);
+  // 之前还在加载的那次作废；已经显示的那次等新的好了再撤
+  if (container.__wxPending) container.__wxPending.destroy();
 
-  // 底图按 cover 铺满：算出底图坐标 (u,v) 在屏幕上的位置
-  let W = 0, H = 0;
-  const pt = (u, v) => { const s = Math.max(W / IMG_W, H / IMG_H); return [(W - IMG_W * s) / 2 + u * IMG_W * s, (H - IMG_H * s) / 2 + v * IMG_H * s]; };
-  const anchored = [];
-  const frostEls = [];
-  const L = {
-    add(cls, style) { const d = el(cls, style); fx.appendChild(d); return d; },
-    anchored(key, cls, size, style) { const d = L.add(cls, { width: size, height: size, ...style }); anchored.push([d, ANCHORS[key]]); return d; },
-    drift(kind, style, seconds, rev) {
-      const mask = 'linear-gradient(to bottom, transparent, #000 25%, #000 75%, transparent)';
-      return L.add('wx-l wx-drift' + (rev ? ' rev' : ''), { backgroundImage: `url(${texture(kind)})`, animationDuration: seconds + 's', WebkitMaskImage: mask, maskImage: mask, ...style });
-    },
-    bgClone(style) {
-      const c = document.createElement('img'); c.className = 'wx-bgc wx-l'; c.alt = ''; c.src = bg.src;
-      bg.addEventListener('error', () => { c.src = BG_BASE + st.file + '.png'; }, { once: true });
-      Object.assign(c.style, style); fx.appendChild(c); return c;
-    },
-    // 热浪扭曲只做底部一条：底图副本放进底部容器，对齐原图后加 SVG 位移滤镜
-    heatShimmer(frac) {
-      const wrap = L.add('wx-l', { left: '0', right: '0', bottom: '0', height: frac * 100 + '%', overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to top, #000 45%, transparent)', maskImage: 'linear-gradient(to top, #000 45%, transparent)' });
-      const c = document.createElement('img'); c.className = 'wx-bgc'; c.alt = ''; c.src = bg.src;
-      bg.addEventListener('error', () => { c.src = BG_BASE + st.file + '.png'; }, { once: true });
-      Object.assign(c.style, { top: 'auto', bottom: '0', height: 100 / frac + '%', filter: `url(#${heatFilterId})` });
-      wrap.appendChild(c); return wrap;
-    },
-    frost() { const d = L.add('wx-l', { inset: '0' }); frostEls.push(d); return d; },
-    heatwave() {
-      const wrap = L.add('wx-l', { left: '0', right: '0', bottom: '0', height: '42%', overflow: 'hidden', WebkitMaskImage: 'linear-gradient(to top, #000 20%, transparent)', maskImage: 'linear-gradient(to top, #000 20%, transparent)' });
-      const w = el('wx-l wx-heatwave', { background: 'repeating-linear-gradient(to top, rgba(255,226,170,0) 0 18px, rgba(255,226,170,.2) 26px, rgba(255,226,170,0) 34px 52px)' });
-      wrap.appendChild(w); return w;
-    },
+  const reduce = motion === 'off' || (motion === 'auto' && reducedMotion());
+  const root = document.createElement('div'); root.className = 'wx-root'; root.dataset.state = st.id;
+  const scene = document.createElement('div'); scene.className = 'wx-scene'; root.appendChild(scene);
+  const nodes = [];      // { m, el, ... } 需要逐帧更新的层
+  const parts = [];      // 粒子层
+  const imgs = [];
+  let heat = null, raf = 0, destroyed = false, paused = reduce, holdT = 0, t0 = performance.now(), W = 1, H = 1, s = 1, dpr = 1, ro = null, lastHeat = -1;
+
+  const handle = {
+    state: st.id, root, reducedMotion: reduce,
+    get paused() { return paused; },
+    // 停在第 t 秒的样子（测试和截图用）
+    seek(t) { paused = true; stop(); holdT = t; render(t, false); },
+    setPaused(p) { paused = !!p; if (!paused) { t0 = performance.now() - holdT * 1000; start(); } else { render(0, true); stop(); } },
+    destroy,
   };
-  const R = recipe(st.id, L);
-  if (R.kb) bg.classList.add('wx-kb', 'wx-l');
-  if (R.pan) bg.classList.add('wx-pan', 'wx-l');
-  if (reduce) fx.querySelectorAll('.wx-flash').forEach(n => n.remove());
-
-  const g = cv.getContext('2d');
-  let q = 1, dpr = 1, raf = 0, last = 0, t0 = performance.now(), running = false, destroyed = false;
-  const env = { pt };
-  const sys = reduce ? [] : R.sys;
-  // 夜里星星不算「动得厉害」，减少动态时也保留静态星点
-  const staticStars = reduce && st.id === 'night' ? [starSys({ count: 70 })] : [];
+  container.__wxPending = handle;
 
   function layout() {
     const r = container.getBoundingClientRect();
-    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
-    dpr = Math.min(window.devicePixelRatio || 1, q < 1 ? 1 : 1.75);
-    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    for (const [d, [u, v]] of anchored) { const [x, y] = pt(u, v); d.style.left = x + 'px'; d.style.top = y + 'px'; }
-    for (const d of frostEls) { d.replaceChildren(Object.assign(frostCanvas(W, H), { style: 'width:100%;height:100%;display:block' })); }
-    for (const s of sys) s.reset(W, H, q, env);
-    for (const s of staticStars) { s.reset(W, H, 1, env); }
-    if (staticStars.length) { g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H); staticStars.forEach(s => s.draw(g, 0)); }
+    W = Math.max(1, r.width); H = Math.max(1, r.height);
+    s = Math.max(W / CW, H / CH);
+    scene.style.transform = `translate(${(W - CW * s) / 2}px,${(H - CH * s) / 2}px) scale(${s})`;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    for (const p of parts) { p.cv.width = Math.round(CW * s * dpr); p.cv.height = Math.round(CH * s * dpr); }
+    render(paused ? 0 : (performance.now() - t0) / 1000, paused);
   }
 
-  // 前 2 秒量一下帧时间，太慢就粒子减半、canvas 降到 1x
-  let probe = [], probed = false;
-  function frame(now) {
-    if (!running) return;
-    raf = requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now;
-    const t = (now - t0) / 1000;
-    if (!probed) {
-      probe.push(dt);
-      if (t > 2.2 && probe.length > 20) {
-        probed = true; probe.sort((a, b) => a - b);
-        if (probe[probe.length >> 1] > 0.024) { q = 0.5; layout(); onQuality && onQuality(q); }
+  function render(t, rest) {
+    for (const n of nodes) {
+      const m = n.m;
+      if (m.type === 'drift') {
+        const a = t / m.periodSeconds * TAU + (m.phase || 0);
+        n.el.style.transform = rest ? 'none' : `translate3d(${(Math.sin(a) * (m.dxPx || 0)).toFixed(2)}px,${(Math.cos(a) * (m.dyPx || 0)).toFixed(2)}px,0)`;
+      } else if (m.type === 'swayRotate') {
+        n.el.style.transform = rest ? 'none' : `rotate(${(Math.sin(t / m.periodSeconds * TAU) * m.degrees).toFixed(3)}deg)`;
+      } else if (m.type === 'breathe') {
+        const low = m.minOpacity ?? 0.65;
+        n.el.style.opacity = rest ? 1 : low + (1 - low) * (0.5 + 0.5 * Math.sin(t / m.periodSeconds * TAU));
+      } else if (m.type === 'twinkle') {
+        const low = m.minOpacity ?? 0.65;
+        n.el.style.opacity = rest ? 1 : low + (1 - low) * (0.5 + 0.5 * Math.sin(t / (m.periodSeconds * n.k) * TAU + n.ph));
+      } else if (m.type === 'lightning') {
+        const d = (t % m.cycleSeconds) - m.pulseAtSeconds;
+        // 柔光比电光退得慢一些，留一点照亮云的余光
+        const op = rest ? 0 : m.role === 'glow' ? 0.5 * flash(d < 0.22 ? d : 0.22 + (d - 0.22) * 0.55) : flash(d);
+        n.el.style.opacity = op; n.el.style.visibility = op > 0.001 ? 'visible' : 'hidden';
       }
     }
-    for (const s of sys) s.update(dt, t);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    for (const s of sys) s.draw(g, t);
+    for (const p of parts) {
+      const v = p.m.velocityPxPerSecond, ts = p.m.tileSize;
+      const ox = rest ? 0 : ((t * v[0]) % ts[0] + ts[0]) % ts[0];
+      const oy = rest ? 0 : ((t * v[1]) % ts[1] + ts[1]) % ts[1];
+      const k = s * dpr, g = p.g;
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, p.cv.width, p.cv.height);
+      p.pat.setTransform(new DOMMatrix([k, 0, 0, k, ox * k, oy * k]));
+      g.fillStyle = p.pat; g.fillRect(0, 0, p.cv.width, p.cv.height);
+    }
+    if (heat) {
+      // 噪声频率 18 秒慢慢变；属性改动会让滤镜重算，十分之一秒更新一次就够
+      const q = rest ? 0 : Math.floor(t * 10);
+      if (q !== lastHeat) { lastHeat = q; heat.turb.setAttribute('baseFrequency', `${(0.004 + Math.sin(t / 18 * TAU) * 0.0007).toFixed(5)} .025`); }
+    }
   }
-  function start() { if (running || destroyed || !sys.length) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); }
-  function stop() { running = false; cancelAnimationFrame(raf); }
-  const onVis = () => (document.hidden ? stop() : start());
 
-  if (prev && prev.root.isConnected) prev.root.after(root); else container.prepend(root);
-  layout();
-  const ro = new ResizeObserver(() => layout()); ro.observe(container);
-  document.addEventListener('visibilitychange', onVis);
-  start();
-  const show = () => requestAnimationFrame(() => root.classList.add('on'));
-  if (bg.complete && bg.naturalWidth) show(); else { bg.addEventListener('load', show, { once: true }); setTimeout(show, 1500); }
+  function frame(now) {
+    if (destroyed || paused) return;
+    raf = requestAnimationFrame(frame);
+    holdT = (now - t0) / 1000;
+    render(holdT, false);
+  }
+  function start() { if (destroyed || paused || raf || document.hidden) return; raf = requestAnimationFrame(frame); }
+  function stop() { cancelAnimationFrame(raf); raf = 0; }
+  const onVis = () => { if (document.hidden) stop(); else { t0 = performance.now() - holdT * 1000; start(); } };
 
-  // 旧层淡出后再移除，切换时不闪
-  const handle = {
-    state: st.id, root, get quality() { return q; }, reducedMotion: reduce,
-    // replaced=true：新层在上面淡入，旧层原样垫着，淡入完再拿掉
-    destroy(replaced = false) {
-      if (destroyed) return; destroyed = true; stop(); ro.disconnect();
-      document.removeEventListener('visibilitychange', onVis);
-      if (!replaced) root.classList.remove('on');
-      setTimeout(() => root.remove(), 900);
-      if (container.__wx === handle) container.__wx = null;
-    },
-  };
-  container.__wx = handle;
+  function destroy(fade = true) {
+    if (destroyed) return; destroyed = true; stop();
+    if (ro) ro.disconnect();
+    document.removeEventListener('visibilitychange', onVis);
+    if (container.__wxPending === handle) container.__wxPending = null;
+    if (container.__wx === handle) container.__wx = null;
+    const release = () => {
+      root.remove();
+      for (const im of imgs) im.src = '';
+      for (const p of parts) { p.cv.width = p.cv.height = 0; }
+      if (heat) heat.svg.remove();
+    };
+    if (fade && root.isConnected && root.classList.contains('on')) { root.classList.remove('on'); setTimeout(release, 850); }
+    else release();
+  }
+
+  async function build() {
+    const cfg = await loadConfig(st);
+    if (destroyed) return;
+    const layers = cfg.layers.filter(l => l.defaultVisible !== false).sort((a, b) => a.z - b.z);
+    const dir = V3 + st.file + '/';
+    const urlOf = l => (l.texture && (l.motion.type === 'drift' || l.motion.type === 'swayRotate'))
+      ? V3 + 'textures/' + l.texture.split('/').pop() : l.pngFile ? dir + l.pngFile : null;
+    const need = [...new Set(layers.map(urlOf).filter(Boolean))];
+    const loaded = new Map(await Promise.all(need.map(async u => [u, await loadImg(u)])));
+    if (destroyed) { loaded.forEach(im => (im.src = '')); return; }
+    const used = new Set();
+    const take = u => { const im = loaded.get(u); if (!used.has(u)) { used.add(u); imgs.push(im); return im; } const c = im.cloneNode(); imgs.push(c); return c; };
+
+    for (const l of layers) {
+      const m = l.motion || { type: 'static' }, u = urlOf(l);
+      if (m.type === 'heat') { heat = heatFilter(); scene.style.filter = `url(#${heat.id})`; continue; }
+      if (!u) continue;
+      if (m.type === 'particles') {
+        const cv = document.createElement('canvas'); cv.className = 'wx-ly';
+        const g = cv.getContext('2d'); const im = loaded.get(u); used.add(u);
+        parts.push({ m, cv, g, pat: g.createPattern(im, 'repeat') });
+        scene.appendChild(cv); continue;
+      }
+      if (m.type === 'drift' || m.type === 'swayRotate') {
+        const pl = l.placement, wrap = document.createElement('div'); wrap.className = 'wx-ly';
+        wrap.style.opacity = pl.opacity ?? 1;
+        if (m.type === 'swayRotate') wrap.style.transformOrigin = `${m.origin[0]}px ${m.origin[1]}px`;
+        const im = take(u);
+        Object.assign(im.style, { left: pl.x + 'px', top: pl.y + 'px', width: pl.width + 'px', height: pl.height + 'px',
+          transform: `rotate(${pl.rotationDegrees || 0}deg)${pl.mirror ? ' scaleX(-1)' : ''}`, transformOrigin: '50% 50%' });
+        wrap.appendChild(im); scene.appendChild(wrap); nodes.push({ m, el: wrap }); continue;
+      }
+      if (m.type === 'twinkle') {
+        // 三组不同节奏：周期 ×1 / ×0.63 / ×1.41，相位错开
+        [[1, 0], [0.63, 2.1], [1.41, 4.2]].forEach(([k, ph], i) => {
+          const im = take(u); im.className = 'wx-ly';
+          const mask = `url(${twinkleMask(i)})`;
+          Object.assign(im.style, { WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '440px 440px', maskSize: '440px 440px' });
+          scene.appendChild(im); nodes.push({ m, el: im, k, ph });
+        });
+        continue;
+      }
+      const im = take(u); im.className = 'wx-ly'; scene.appendChild(im);
+      if (m.type !== 'static') nodes.push({ m, el: im });
+    }
+
+    // 上桌：放在旧场景上面淡入，淡入完撤掉旧的
+    const prev = container.__wx;
+    if (prev && prev.root.isConnected) prev.root.after(root); else container.prepend(root);
+    container.__wx = handle; container.__wxPending = null;
+    layout();
+    ro = new ResizeObserver(layout); ro.observe(container);
+    document.addEventListener('visibilitychange', onVis);
+    start();
+    requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('on')));
+    if (prev) setTimeout(() => prev.destroy(false), 850);
+  }
+
+  handle.ready = build().then(() => handle, e => { if (!destroyed) destroy(false); throw e; });
   return handle;
 }
