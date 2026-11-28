@@ -1,0 +1,257 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "fog",
+  "name": "薄雾",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "fog__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/fog__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L00__sky_color__base.svg"
+    },
+    {
+      "id": "fog__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/fog__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "fog__L20__cloud_stratus_far__far",
+      "z": 20,
+      "component": "cloud_stratus_far",
+      "depth": "far",
+      "source": "layers/fog__L20__cloud_stratus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 96,
+        "dxPx": 40,
+        "dyPx": 7,
+        "phase": 0.1
+      },
+      "description": "延伸至画幅外的远层层云。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -520,
+        "y": -530,
+        "width": 2470,
+        "height": 1646.6666666666667,
+        "opacity": 0.45,
+        "mirror": false,
+        "rotationDegrees": -6
+      },
+      "pngFile": "L20_cloud_stratus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L20__cloud_stratus_far__far.svg"
+    },
+    {
+      "id": "fog__L30__cloud_stratus_far__mid",
+      "z": 30,
+      "component": "cloud_stratus_far",
+      "depth": "mid",
+      "source": "layers/fog__L30__cloud_stratus_far__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 85,
+        "dxPx": -33,
+        "dyPx": 6,
+        "phase": 0.9
+      },
+      "description": "雾中朦胧云体。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": 100,
+        "y": -310,
+        "width": 1940,
+        "height": 1293.3333333333333,
+        "opacity": 0.22,
+        "mirror": true,
+        "rotationDegrees": 8
+      },
+      "pngFile": "L30_cloud_stratus_far_mid.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L30__cloud_stratus_far__mid.svg"
+    },
+    {
+      "id": "fog__L43__fog_volume_mid__far",
+      "z": 43,
+      "component": "fog_volume_mid",
+      "depth": "far",
+      "source": "layers/fog__L43__fog_volume_mid__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 108,
+        "dxPx": 58,
+        "dyPx": 12,
+        "phase": 2.8666666666666667
+      },
+      "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+      "texture": "assets/textures/fog_volume_mid.png",
+      "placement": {
+        "x": -950,
+        "y": 200,
+        "width": 2810,
+        "height": 1580,
+        "opacity": 0.27599999999999997,
+        "mirror": false,
+        "rotationDegrees": -10
+      },
+      "pngFile": "L43_fog_volume_mid_far.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L43__fog_volume_mid__far.svg"
+    },
+    {
+      "id": "fog__L45__fog_volume_mid__mid",
+      "z": 45,
+      "component": "fog_volume_mid",
+      "depth": "mid",
+      "source": "layers/fog__L45__fog_volume_mid__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 84,
+        "dxPx": -70,
+        "dyPx": 12,
+        "phase": 3.0
+      },
+      "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+      "texture": "assets/textures/fog_volume_mid.png",
+      "placement": {
+        "x": 330,
+        "y": 830,
+        "width": 2340,
+        "height": 1830,
+        "opacity": 0.322,
+        "mirror": true,
+        "rotationDegrees": 16
+      },
+      "pngFile": "L45_fog_volume_mid_mid.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L45__fog_volume_mid__mid.svg"
+    },
+    {
+      "id": "fog__L47__fog_volume_mid__near",
+      "z": 47,
+      "component": "fog_volume_mid",
+      "depth": "near",
+      "source": "layers/fog__L47__fog_volume_mid__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 65,
+        "dxPx": 58,
+        "dyPx": 12,
+        "phase": 3.1333333333333333
+      },
+      "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+      "texture": "assets/textures/fog_volume_mid.png",
+      "placement": {
+        "x": -730,
+        "y": 1780,
+        "width": 2910,
+        "height": 1670,
+        "opacity": 0.506,
+        "mirror": true,
+        "rotationDegrees": -15
+      },
+      "pngFile": "L47_fog_volume_mid_near.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L47__fog_volume_mid__near.svg"
+    },
+    {
+      "id": "fog__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/fog__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/fog/layers/fog__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}

@@ -1,0 +1,315 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "snow",
+  "name": "飘雪",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "snow__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/snow__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L00__sky_color__base.svg"
+    },
+    {
+      "id": "snow__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/snow__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "snow__L20__cloud_stratus_far__far",
+      "z": 20,
+      "component": "cloud_stratus_far",
+      "depth": "far",
+      "source": "layers/snow__L20__cloud_stratus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 96,
+        "dxPx": 40,
+        "dyPx": 7,
+        "phase": 0.1
+      },
+      "description": "延伸至画幅外的远层层云。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -520,
+        "y": -530,
+        "width": 2470,
+        "height": 1646.6666666666667,
+        "opacity": 0.78,
+        "mirror": false,
+        "rotationDegrees": -6
+      },
+      "pngFile": "L20_cloud_stratus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L20__cloud_stratus_far__far.svg"
+    },
+    {
+      "id": "snow__L30__cloud_stratus_far__mid",
+      "z": 30,
+      "component": "cloud_stratus_far",
+      "depth": "mid",
+      "source": "layers/snow__L30__cloud_stratus_far__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 72,
+        "dxPx": -50,
+        "dyPx": 6,
+        "phase": 0.9
+      },
+      "description": "主体云墙，顶部越出画幅；与远云交叠。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -360,
+        "y": -235,
+        "width": 2200,
+        "height": 1466.6666666666667,
+        "opacity": 0.55,
+        "mirror": true,
+        "rotationDegrees": 5
+      },
+      "pngFile": "L30_cloud_stratus_far_mid.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L30__cloud_stratus_far__mid.svg"
+    },
+    {
+      "id": "snow__L40__cloud_stratus_far__near",
+      "z": 40,
+      "component": "cloud_stratus_far",
+      "depth": "near",
+      "source": "layers/snow__L40__cloud_stratus_far__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 63,
+        "dxPx": 40,
+        "dyPx": 6,
+        "phase": 1.8
+      },
+      "description": "淡化的边缘近云，避开中央信息区。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": 260,
+        "y": 2630,
+        "width": 2280,
+        "height": 1520.0,
+        "opacity": 0.2,
+        "mirror": true,
+        "rotationDegrees": 7
+      },
+      "pngFile": "L40_cloud_stratus_far_near.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L40__cloud_stratus_far__near.svg"
+    },
+    {
+      "id": "snow__L60__snow__far",
+      "z": 60,
+      "component": "snow",
+      "depth": "far",
+      "source": "layers/snow__L60__snow__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          10,
+          26
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "snow_snow_far",
+        "kind": "snow",
+        "countPerTile": 180,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 2300,
+        "velocityPxPerSecond": [
+          10,
+          26
+        ]
+      },
+      "pngFile": "L60_snow_far.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L60__snow__far.svg"
+    },
+    {
+      "id": "snow__L65__snow__mid",
+      "z": 65,
+      "component": "snow",
+      "depth": "mid",
+      "source": "layers/snow__L65__snow__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          10,
+          45
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "snow_snow_mid",
+        "kind": "snow",
+        "countPerTile": 110,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 2305,
+        "velocityPxPerSecond": [
+          10,
+          45
+        ]
+      },
+      "pngFile": "L65_snow_mid.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L65__snow__mid.svg"
+    },
+    {
+      "id": "snow__L70__snow__near",
+      "z": 70,
+      "component": "snow",
+      "depth": "near",
+      "source": "layers/snow__L70__snow__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          10,
+          72
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "snow_snow_near",
+        "kind": "snow",
+        "countPerTile": 45,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 2310,
+        "velocityPxPerSecond": [
+          10,
+          72
+        ]
+      },
+      "pngFile": "L70_snow_near.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L70__snow__near.svg"
+    },
+    {
+      "id": "snow__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/snow__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/snow/layers/snow__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}
