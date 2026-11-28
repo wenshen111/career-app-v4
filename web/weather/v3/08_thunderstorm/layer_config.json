@@ -1,0 +1,363 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "thunderstorm",
+  "name": "雷暴",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "thunderstorm__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/thunderstorm__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L00__sky_color__base.svg"
+    },
+    {
+      "id": "thunderstorm__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/thunderstorm__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "thunderstorm__L20__cloud_stratus_far__far",
+      "z": 20,
+      "component": "cloud_stratus_far",
+      "depth": "far",
+      "source": "layers/thunderstorm__L20__cloud_stratus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 96,
+        "dxPx": 40,
+        "dyPx": 7,
+        "phase": 0.1
+      },
+      "description": "延伸至画幅外的远层层云。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -520,
+        "y": -530,
+        "width": 2470,
+        "height": 1646.6666666666667,
+        "opacity": 0.78,
+        "mirror": false,
+        "rotationDegrees": -6
+      },
+      "pngFile": "L20_cloud_stratus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L20__cloud_stratus_far__far.svg"
+    },
+    {
+      "id": "thunderstorm__L30__cloud_storm_near__mid",
+      "z": 30,
+      "component": "cloud_storm_near",
+      "depth": "mid",
+      "source": "layers/thunderstorm__L30__cloud_storm_near__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 72,
+        "dxPx": -50,
+        "dyPx": 6,
+        "phase": 0.9
+      },
+      "description": "主体云墙，顶部越出画幅；与远云交叠。",
+      "texture": "assets/textures/cloud_storm_near.png",
+      "placement": {
+        "x": -360,
+        "y": -140,
+        "width": 2200,
+        "height": 1466.6666666666667,
+        "opacity": 0.9,
+        "mirror": false,
+        "rotationDegrees": -5
+      },
+      "pngFile": "L30_cloud_storm_near_mid.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L30__cloud_storm_near__mid.svg"
+    },
+    {
+      "id": "thunderstorm__L40__cloud_stratus_far__near",
+      "z": 40,
+      "component": "cloud_stratus_far",
+      "depth": "near",
+      "source": "layers/thunderstorm__L40__cloud_stratus_far__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 63,
+        "dxPx": 40,
+        "dyPx": 6,
+        "phase": 1.8
+      },
+      "description": "淡化的边缘近云，避开中央信息区。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -820,
+        "y": 2490,
+        "width": 2280,
+        "height": 1520.0,
+        "opacity": 0.18,
+        "mirror": true,
+        "rotationDegrees": -11
+      },
+      "pngFile": "L40_cloud_stratus_far_near.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L40__cloud_stratus_far__near.svg"
+    },
+    {
+      "id": "thunderstorm__L50__lightning_glow__mid",
+      "z": 50,
+      "component": "lightning_glow",
+      "depth": "mid",
+      "source": "layers/thunderstorm__L50__lightning_glow__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "lightning",
+        "role": "glow",
+        "cycleSeconds": 12,
+        "pulseAtSeconds": 5.2
+      },
+      "description": "照亮云层的柔光；不与闪电亮纹合并。",
+      "staticPreviewOpacity": 0.5,
+      "pngFile": "L50_lightning_glow_mid.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L50__lightning_glow__mid.svg"
+    },
+    {
+      "id": "thunderstorm__L55__lightning_channel__near",
+      "z": 55,
+      "component": "lightning_channel",
+      "depth": "near",
+      "source": "layers/thunderstorm__L55__lightning_channel__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "lightning",
+        "role": "bolt",
+        "cycleSeconds": 12,
+        "pulseAtSeconds": 5.2
+      },
+      "description": "细而不规则的自然分叉原生矢量电光；柔光另层。",
+      "alternateTexture": "assets/textures/lightning_channel.png",
+      "pngFile": "L55_lightning_channel_near.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L55__lightning_channel__near.svg"
+    },
+    {
+      "id": "thunderstorm__L60__rain__far",
+      "z": 60,
+      "component": "rain",
+      "depth": "far",
+      "source": "layers/thunderstorm__L60__rain__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -57.599999999999994,
+          320
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "thunderstorm_rain_far",
+        "kind": "rain",
+        "countPerTile": 175,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 1270,
+        "velocityPxPerSecond": [
+          -57.599999999999994,
+          320
+        ]
+      },
+      "pngFile": "L60_rain_far.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L60__rain__far.svg"
+    },
+    {
+      "id": "thunderstorm__L65__rain__mid",
+      "z": 65,
+      "component": "rain",
+      "depth": "mid",
+      "source": "layers/thunderstorm__L65__rain__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -97.2,
+          540
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "thunderstorm_rain_mid",
+        "kind": "rain",
+        "countPerTile": 122,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 1275,
+        "velocityPxPerSecond": [
+          -97.2,
+          540
+        ]
+      },
+      "pngFile": "L65_rain_mid.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L65__rain__mid.svg"
+    },
+    {
+      "id": "thunderstorm__L70__rain__near",
+      "z": 70,
+      "component": "rain",
+      "depth": "near",
+      "source": "layers/thunderstorm__L70__rain__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -153.0,
+          850
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "thunderstorm_rain_near",
+        "kind": "rain",
+        "countPerTile": 61,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 1280,
+        "velocityPxPerSecond": [
+          -153.0,
+          850
+        ]
+      },
+      "pngFile": "L70_rain_near.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L70__rain__near.svg"
+    },
+    {
+      "id": "thunderstorm__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/thunderstorm__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/thunderstorm/layers/thunderstorm__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}
