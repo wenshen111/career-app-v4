@@ -33,14 +33,14 @@ assert.equal(M(61, { temp: 33 }), 'drizzle', '下雨时不算酷热');
 assert.equal(M(61, { wind: 90 }), 'cyclone');
 assert.equal(M(12345), 'sunny', '不认识的代码当晴');
 assert.equal(STATES.length, 16);
-// v3 素材：每种都有 layer_config.json，里面引用的 PNG / 纹理都在
-for (const s of STATES) {
-  const dir = path.join(root, 'weather', 'v3', s.file);
+// 素材（旧 v3 和 demo 现在用的 assets/weather）：每种都有 layer_config.json，里面引用的 PNG / 纹理都在
+for (const base of [['weather', 'v3'], ['assets', 'weather']]) for (const s of STATES) {
+  const dir = path.join(root, ...base, s.file);
   const cfg = JSON.parse(await fs.readFile(path.join(dir, 'layer_config.json'), 'utf8'));
   assert.equal(cfg.id, s.id);
   for (const l of cfg.layers) {
     if (l.pngFile) await fs.access(path.join(dir, l.pngFile));
-    if (l.texture) await fs.access(path.join(root, 'weather', 'v3', 'textures', l.texture.split('/').pop()));
+    if (l.texture) await fs.access(path.join(root, ...base, 'textures', l.texture.split('/').pop()));
   }
 }
 
@@ -58,7 +58,7 @@ const browser = await chromium.launch();
 const errors = [];
 let failed = false;
 try {
-  // 2a. 下拉 16 种都能挂上：底图加载、名字对、只留一层
+  // 2a. 下拉 16 种都能挂上（assets/weather/engine.mjs）：场景出现、名字对、只留一层、URL 跟着变
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   await ctx.route(/open-meteo\.com/, r => r.abort());
   const page = await ctx.newPage();
@@ -66,19 +66,18 @@ try {
   await page.goto(url);
   for (const s of STATES) {
     await page.selectOption('#pick', s.id);
-    await page.waitForFunction(id => !!document.querySelector(`.wx-root.on[data-state="${id}"]`), s.id, { timeout: 60000 });
-    // 所有图都真的解码了，且没有加载默认关闭的可读罩
-    assert.ok(await page.evaluate(() => [...document.querySelectorAll('.wx-root img')].every(i => i.complete && i.naturalWidth > 0)));
-    assert.ok(await page.evaluate(() => ![...document.querySelectorAll('.wx-root img')].some(i => /L90_/.test(i.src))));
+    await page.waitForFunction(id => { const r = document.querySelector(`.weather-v4-scene[data-state="${id}"]`); return r && r.style.opacity === '1' && !/加载中/.test(document.getElementById('src').textContent); }, s.id, { timeout: 60000 });
     assert.equal((await page.textContent('#st')).trim(), s.name);
+    assert.equal(new URL(page.url()).searchParams.get('s'), s.id);
   }
   await page.waitForTimeout(1200);
-  assert.equal(await page.locator('.wx-root').count(), 1, '旧场景应该被移除');
-  // 粒子层真的在动：两个时刻的雨层像素不同
+  assert.equal(await page.locator('.weather-v4-scene').count(), 1, '旧场景应该被移除');
+  // 动效真的在动：隔一段时间画面像素不同
   await page.selectOption('#pick', 'downpour');
-  await page.waitForFunction(() => !!document.querySelector('.wx-root.on[data-state="downpour"]'), null, { timeout: 60000 });
-  const snap = t => page.evaluate(t => { const h = document.getElementById('sky').__wx; h.seek(t); return document.querySelector('.wx-root[data-state="downpour"] canvas').toDataURL(); }, t);
-  assert.notEqual(await snap(0.5), await snap(1.5));
+  await page.waitForFunction(() => { const r = document.querySelector('.weather-v4-scene[data-state="downpour"]'); return r && r.style.opacity === '1'; }, null, { timeout: 60000 });
+  const snap = () => page.evaluate(() => document.querySelector('.weather-v4-scene[data-state="downpour"] canvas').toDataURL());
+  const a = await snap(); await page.waitForTimeout(700);
+  assert.notEqual(a, await snap());
   await ctx.close();
 
   // 2b. 定位成功 + 接口返回暴雨 → 显示暴雨、温度、风速，并写缓存

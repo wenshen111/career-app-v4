@@ -53,15 +53,17 @@
 </div>
 
 <script type="module">
-  import { STATES, stateName, applyWeather, resolveWeather, cachedWeather, defaultState } from './weather/weather.mjs';
+  import { STATES, stateName, resolveWeather, cachedWeather, defaultState } from './weather/weather.mjs';
+  import { applyWeather } from './assets/weather/engine.mjs';
 
   const $ = id => document.getElementById(id);
   const sky = $('sky');
+  let liveRequest = 0;
   let mode = 'default';          // 'default' | 'live' | 'manual'
 
   for (const s of STATES) $('pick').append(new Option(s.name, s.id));
 
-  let cur = null, still = false, seq = 0;
+  let cur = null, still = !!matchMedia('(prefers-reduced-motion: reduce)').matches, seq = 0;
   async function show(state, { temp = null, wind = null, src = '' } = {}) {
     const my = ++seq;
     $('pick').value = state;
@@ -70,14 +72,13 @@
     const w = wind == null ? '—' : Math.round(wind);
     $('meta').textContent = `${t} °C · 风 ${w} km/h`;
     $('src').textContent = '图层加载中…';
-    const h = applyWeather(sky, state);
+    const h = applyWeather(sky, state, { motion: still ? 'off' : 'on' });
     try { await h.ready; } catch (e) { if (my === seq) $('src').textContent = '加载失败，再点一次刷新'; return; }
     if (my !== seq) return;
     cur = h;
-    if (h.reducedMotion && !still) { still = true; }
-    if (still) h.setPaused(true);
+    h.setPaused(still);
     syncStill();
-    $('src').textContent = src + (h.reducedMotion ? '（系统开了「减少动态」，先停着；点「播放动效」可以看）' : '');
+    $('src').textContent = src + (h.reducedMotion && still ? '（系统开了「减少动态」，先停着；点「播放动效」可以看）' : '');
     document.documentElement.dataset.state = state;
   }
   function syncStill() {
@@ -89,11 +90,14 @@
   const hhmm = ms => new Date(ms).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
   async function useLocation() {
+    const request = ++liveRequest;
     mode = 'live';
+    const u = new URL(location.href); u.searchParams.delete('s'); history.replaceState(null, '', u);
     $('src').textContent = '定位中…';
     $('loc').disabled = $('refresh').disabled = true;
     try {
       const r = await resolveWeather();
+      if (request !== liveRequest || mode !== 'live') return;
       const d = r.data || {};
       const src = r.source === 'live' ? `实时 · ${hhmm(Date.now())}`
         : r.source === 'cache' ? `用上次结果（${hhmm(d.at)}）· ${r.reason}`
@@ -107,7 +111,11 @@
     show(defaultState(), { src: '用默认天气' });
   }
 
-  $('pick').addEventListener('change', e => { mode = 'manual'; show(e.target.value, { src: '手动预览' }); });
+  $('pick').addEventListener('change', e => {
+    ++liveRequest; mode = 'manual';
+    const u = new URL(location.href); u.searchParams.set('s', e.target.value); history.replaceState(null, '', u);
+    show(e.target.value, { src: '手动预览' });
+  });
   $('loc').addEventListener('click', useLocation);
   $('refresh').addEventListener('click', () => (mode === 'manual' ? show($('pick').value, { src: '手动预览' }) : mode === 'live' ? useLocation() : useDefault()));
 
@@ -119,7 +127,7 @@
     if (c && c.state) show((c.state === 'sunny' || c.state === 'night') ? defaultState() : c.state,
       { temp: c.temp, wind: c.wind, src: `上次结果（${hhmm(c.at)}）` });
     else useDefault();
-    navigator.permissions?.query({ name: 'geolocation' }).then(p => { if (p.state === 'granted') useLocation(); }).catch(() => {});
+    navigator.permissions?.query({ name: 'geolocation' }).then(p => { if (p.state === 'granted' && mode !== 'manual') useLocation(); }).catch(() => {});
   }
 </script>
 </body>

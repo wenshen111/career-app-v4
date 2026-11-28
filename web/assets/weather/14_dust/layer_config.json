@@ -1,0 +1,315 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "dust",
+  "name": "沙尘",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "dust__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/dust__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L00__sky_color__base.svg"
+    },
+    {
+      "id": "dust__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/dust__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "dust__L20__dust_volume_mid__far",
+      "z": 20,
+      "component": "dust_volume_mid",
+      "depth": "far",
+      "source": "layers/dust__L20__dust_volume_mid__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 78.0,
+        "dxPx": -110,
+        "dyPx": 12,
+        "phase": 1.8181818181818181
+      },
+      "description": "有方向性的沙尘体积；避免等距重复。",
+      "texture": "assets/textures/dust_volume_mid.png",
+      "placement": {
+        "x": -1150,
+        "y": -450,
+        "width": 2780,
+        "height": 1960,
+        "opacity": 0.38,
+        "mirror": false,
+        "rotationDegrees": -11
+      },
+      "pngFile": "L20_dust_volume_mid_far.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L20__dust_volume_mid__far.svg"
+    },
+    {
+      "id": "dust__L35__dust_volume_mid__mid",
+      "z": 35,
+      "component": "dust_volume_mid",
+      "depth": "mid",
+      "source": "layers/dust__L35__dust_volume_mid__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 73.5,
+        "dxPx": -110,
+        "dyPx": 12,
+        "phase": 3.1818181818181817
+      },
+      "description": "有方向性的沙尘体积；避免等距重复。",
+      "texture": "assets/textures/dust_volume_mid.png",
+      "placement": {
+        "x": 150,
+        "y": 480,
+        "width": 2510,
+        "height": 2050,
+        "opacity": 0.36,
+        "mirror": true,
+        "rotationDegrees": 20
+      },
+      "pngFile": "L35_dust_volume_mid_mid.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L35__dust_volume_mid__mid.svg"
+    },
+    {
+      "id": "dust__L48__dust_volume_mid__near",
+      "z": 48,
+      "component": "dust_volume_mid",
+      "depth": "near",
+      "source": "layers/dust__L48__dust_volume_mid__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 69.6,
+        "dxPx": -110,
+        "dyPx": 12,
+        "phase": 4.363636363636363
+      },
+      "description": "有方向性的沙尘体积；避免等距重复。",
+      "texture": "assets/textures/dust_volume_mid.png",
+      "placement": {
+        "x": -1070,
+        "y": 1680,
+        "width": 3060,
+        "height": 2130,
+        "opacity": 0.48,
+        "mirror": true,
+        "rotationDegrees": -19
+      },
+      "pngFile": "L48_dust_volume_mid_near.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L48__dust_volume_mid__near.svg"
+    },
+    {
+      "id": "dust__L60__dust__far",
+      "z": 60,
+      "component": "dust",
+      "depth": "far",
+      "source": "layers/dust__L60__dust__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -35,
+          4
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "dust_dust_far",
+        "kind": "dust",
+        "countPerTile": 110,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 4060,
+        "velocityPxPerSecond": [
+          -35,
+          4
+        ]
+      },
+      "pngFile": "L60_dust_far.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L60__dust__far.svg"
+    },
+    {
+      "id": "dust__L65__dust__mid",
+      "z": 65,
+      "component": "dust",
+      "depth": "mid",
+      "source": "layers/dust__L65__dust__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -65,
+          4
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "dust_dust_mid",
+        "kind": "dust",
+        "countPerTile": 65,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 4065,
+        "velocityPxPerSecond": [
+          -65,
+          4
+        ]
+      },
+      "pngFile": "L65_dust_mid.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L65__dust__mid.svg"
+    },
+    {
+      "id": "dust__L70__dust__near",
+      "z": 70,
+      "component": "dust",
+      "depth": "near",
+      "source": "layers/dust__L70__dust__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -110,
+          4
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "dust_dust_near",
+        "kind": "dust",
+        "countPerTile": 30,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 4070,
+        "velocityPxPerSecond": [
+          -110,
+          4
+        ]
+      },
+      "pngFile": "L70_dust_near.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L70__dust__near.svg"
+    },
+    {
+      "id": "dust__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/dust__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/dust/layers/dust__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}
