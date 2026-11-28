@@ -1,0 +1,189 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "wind",
+  "name": "强风",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "wind__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/wind__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/wind/layers/wind__L00__sky_color__base.svg"
+    },
+    {
+      "id": "wind__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/wind__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/wind/layers/wind__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "wind__L20__cloud_cirrus_far__far",
+      "z": 20,
+      "component": "cloud_cirrus_far",
+      "depth": "far",
+      "source": "layers/wind__L20__cloud_cirrus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 68,
+        "dxPx": 85,
+        "dyPx": 14,
+        "phase": 0.2
+      },
+      "description": "斜向拉长的高空卷云。",
+      "texture": "assets/textures/cloud_cirrus_far.png",
+      "placement": {
+        "x": -560,
+        "y": -120,
+        "width": 2530,
+        "height": 1070,
+        "opacity": 0.72,
+        "mirror": false,
+        "rotationDegrees": -17
+      },
+      "pngFile": "L20_cloud_cirrus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/wind/layers/wind__L20__cloud_cirrus_far__far.svg"
+    },
+    {
+      "id": "wind__L30__cloud_cirrus_far__mid",
+      "z": 30,
+      "component": "cloud_cirrus_far",
+      "depth": "mid",
+      "source": "layers/wind__L30__cloud_cirrus_far__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 55,
+        "dxPx": -110,
+        "dyPx": 18,
+        "phase": 0.8
+      },
+      "description": "侧边高速云带。",
+      "texture": "assets/textures/cloud_cirrus_far.png",
+      "placement": {
+        "x": 250,
+        "y": 180,
+        "width": 2030,
+        "height": 700,
+        "opacity": 0.4,
+        "mirror": true,
+        "rotationDegrees": -18
+      },
+      "pngFile": "L30_cloud_cirrus_far_mid.png",
+      "editableSvg": "../ENGINEERING/weather/wind/layers/wind__L30__cloud_cirrus_far__mid.svg"
+    },
+    {
+      "id": "wind__L40__cloud_cumulus_mid__near",
+      "z": 40,
+      "component": "cloud_cumulus_mid",
+      "depth": "near",
+      "source": "layers/wind__L40__cloud_cumulus_mid__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 50,
+        "dxPx": -125,
+        "dyPx": 12,
+        "phase": 1.5
+      },
+      "description": "右倾风吹云。",
+      "texture": "assets/textures/cloud_cumulus_mid.png",
+      "placement": {
+        "x": -620,
+        "y": 2450,
+        "width": 2150,
+        "height": 1433.3333333333333,
+        "opacity": 0.38,
+        "mirror": false,
+        "rotationDegrees": -13
+      },
+      "pngFile": "L40_cloud_cumulus_mid_near.png",
+      "editableSvg": "../ENGINEERING/weather/wind/layers/wind__L40__cloud_cumulus_mid__near.svg"
+    },
+    {
+      "id": "wind__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/wind__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/wind/layers/wind__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}

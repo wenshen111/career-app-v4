@@ -1,0 +1,260 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "heat",
+  "name": "酷热",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "heat__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/heat__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L00__sky_color__base.svg"
+    },
+    {
+      "id": "heat__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/heat__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "heat__L10__sun_halo__far",
+      "z": 10,
+      "component": "sun_halo",
+      "depth": "far",
+      "source": "layers/heat__L10__sun_halo__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "宽幅日光晕；太阳本体和光束另分层。",
+      "pngFile": "L10_sun_halo_far.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L10__sun_halo__far.svg"
+    },
+    {
+      "id": "heat__L11__sun_disc__far",
+      "z": 11,
+      "component": "sun_disc",
+      "depth": "far",
+      "source": "layers/heat__L11__sun_disc__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "太阳圆面；原生矢量。",
+      "pngFile": "L11_sun_disc_far.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L11__sun_disc__far.svg"
+    },
+    {
+      "id": "heat__L12__sun_rays__far",
+      "z": 12,
+      "component": "sun_rays",
+      "depth": "far",
+      "source": "layers/heat__L12__sun_rays__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "breathe",
+        "periodSeconds": 14,
+        "minOpacity": 0.65
+      },
+      "description": "独立日光束，幅度克制，不旋转成魔法特效。",
+      "pngFile": "L12_sun_rays_far.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L12__sun_rays__far.svg"
+    },
+    {
+      "id": "heat__L20__cloud_cirrus_far__far",
+      "z": 20,
+      "component": "cloud_cirrus_far",
+      "depth": "far",
+      "source": "layers/heat__L20__cloud_cirrus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 120,
+        "dxPx": 20,
+        "dyPx": 3,
+        "phase": 0
+      },
+      "description": "高空热霾薄云。",
+      "texture": "assets/textures/cloud_cirrus_far.png",
+      "placement": {
+        "x": -420,
+        "y": -365,
+        "width": 2210,
+        "height": 1473.3333333333333,
+        "opacity": 0.32,
+        "mirror": false,
+        "rotationDegrees": -5
+      },
+      "pngFile": "L20_cloud_cirrus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L20__cloud_cirrus_far__far.svg"
+    },
+    {
+      "id": "heat__L40__cloud_cirrus_far__near",
+      "z": 40,
+      "component": "cloud_cirrus_far",
+      "depth": "near",
+      "source": "layers/heat__L40__cloud_cirrus_far__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 100,
+        "dxPx": -22,
+        "dyPx": 2,
+        "phase": 0.8
+      },
+      "description": "低处暖色薄云。",
+      "texture": "assets/textures/cloud_cirrus_far.png",
+      "placement": {
+        "x": -500,
+        "y": 2380,
+        "width": 2440,
+        "height": 1626.6666666666667,
+        "opacity": 0.27,
+        "mirror": true,
+        "rotationDegrees": 7
+      },
+      "pngFile": "L40_cloud_cirrus_far_near.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L40__cloud_cirrus_far__near.svg"
+    },
+    {
+      "id": "heat__L75__heat_refraction__effect",
+      "z": 75,
+      "component": "heat_refraction",
+      "depth": "effect",
+      "source": "layers/heat__L75__heat_refraction__effect.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "heat",
+        "filterId": "heat_heat",
+        "maxDisplacementPx": 5,
+        "periodSeconds": 18
+      },
+      "description": "真实位移滤镜定义；作用于后方天气组，不作用于App文字，空白PNG无法表达折射。",
+      "pngFile": null,
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L75__heat_refraction__effect.svg"
+    },
+    {
+      "id": "heat__L78__warm_air_glow__near",
+      "z": 78,
+      "component": "warm_air_glow",
+      "depth": "near",
+      "source": "layers/heat__L78__warm_air_glow__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "独立暖空气光色层，无火焰图案。",
+      "pngFile": "L78_warm_air_glow_near.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L78__warm_air_glow__near.svg"
+    },
+    {
+      "id": "heat__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/heat__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/heat/layers/heat__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}
