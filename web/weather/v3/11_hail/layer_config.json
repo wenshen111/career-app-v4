@@ -1,0 +1,315 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "hail",
+  "name": "冰雹",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "hail__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/hail__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L00__sky_color__base.svg"
+    },
+    {
+      "id": "hail__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/hail__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "hail__L20__cloud_stratus_far__far",
+      "z": 20,
+      "component": "cloud_stratus_far",
+      "depth": "far",
+      "source": "layers/hail__L20__cloud_stratus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 96,
+        "dxPx": 40,
+        "dyPx": 7,
+        "phase": 0.1
+      },
+      "description": "延伸至画幅外的远层层云。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -520,
+        "y": -530,
+        "width": 2470,
+        "height": 1646.6666666666667,
+        "opacity": 0.78,
+        "mirror": false,
+        "rotationDegrees": -6
+      },
+      "pngFile": "L20_cloud_stratus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L20__cloud_stratus_far__far.svg"
+    },
+    {
+      "id": "hail__L30__cloud_storm_near__mid",
+      "z": 30,
+      "component": "cloud_storm_near",
+      "depth": "mid",
+      "source": "layers/hail__L30__cloud_storm_near__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 72,
+        "dxPx": -50,
+        "dyPx": 6,
+        "phase": 0.9
+      },
+      "description": "主体云墙，顶部越出画幅；与远云交叠。",
+      "texture": "assets/textures/cloud_storm_near.png",
+      "placement": {
+        "x": -360,
+        "y": -140,
+        "width": 2200,
+        "height": 1466.6666666666667,
+        "opacity": 0.76,
+        "mirror": true,
+        "rotationDegrees": 5
+      },
+      "pngFile": "L30_cloud_storm_near_mid.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L30__cloud_storm_near__mid.svg"
+    },
+    {
+      "id": "hail__L40__cloud_stratus_far__near",
+      "z": 40,
+      "component": "cloud_stratus_far",
+      "depth": "near",
+      "source": "layers/hail__L40__cloud_stratus_far__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 63,
+        "dxPx": 40,
+        "dyPx": 6,
+        "phase": 1.8
+      },
+      "description": "淡化的边缘近云，避开中央信息区。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -820,
+        "y": 2490,
+        "width": 2280,
+        "height": 1520.0,
+        "opacity": 0.18,
+        "mirror": true,
+        "rotationDegrees": -11
+      },
+      "pngFile": "L40_cloud_stratus_far_near.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L40__cloud_stratus_far__near.svg"
+    },
+    {
+      "id": "hail__L60__hail__far",
+      "z": 60,
+      "component": "hail",
+      "depth": "far",
+      "source": "layers/hail__L60__hail__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -72.0,
+          400
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "hail_hail_far",
+        "kind": "hail",
+        "countPerTile": 130,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 3060,
+        "velocityPxPerSecond": [
+          -72.0,
+          400
+        ]
+      },
+      "pngFile": "L60_hail_far.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L60__hail__far.svg"
+    },
+    {
+      "id": "hail__L65__hail__mid",
+      "z": 65,
+      "component": "hail",
+      "depth": "mid",
+      "source": "layers/hail__L65__hail__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -122.39999999999999,
+          680
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "hail_hail_mid",
+        "kind": "hail",
+        "countPerTile": 85,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 3065,
+        "velocityPxPerSecond": [
+          -122.39999999999999,
+          680
+        ]
+      },
+      "pngFile": "L65_hail_mid.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L65__hail__mid.svg"
+    },
+    {
+      "id": "hail__L70__hail__near",
+      "z": 70,
+      "component": "hail",
+      "depth": "near",
+      "source": "layers/hail__L70__hail__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -183.6,
+          1020
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "hail_hail_near",
+        "kind": "hail",
+        "countPerTile": 38,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 3070,
+        "velocityPxPerSecond": [
+          -183.6,
+          1020
+        ]
+      },
+      "pngFile": "L70_hail_near.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L70__hail__near.svg"
+    },
+    {
+      "id": "hail__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/hail__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/hail/layers/hail__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}
