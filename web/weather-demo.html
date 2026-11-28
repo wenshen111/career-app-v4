@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7d9bbf">
+<title>天气背景演示</title>
+<style>
+  :root { color-scheme: light; --glass: rgba(255,255,255,.28); --line: rgba(255,255,255,.55); --ink: #1d2a3e; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #7d9bbf; overflow: hidden;
+    font-family: system-ui, -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; color: var(--ink); }
+  #sky { position: fixed; inset: 0; height: 100dvh; }
+  .ui { position: fixed; z-index: 2; top: max(12px, env(safe-area-inset-top)); display: flex; flex-direction: column; gap: 8px; }
+  .left { left: max(12px, env(safe-area-inset-left)); min-width: 132px; max-width: calc(50vw - 18px); }
+  .right { right: max(12px, env(safe-area-inset-right)); align-items: flex-end; text-align: right; max-width: calc(50vw - 18px); }
+  .glass { background: var(--glass); border: 1px solid var(--line); border-radius: 14px;
+    -webkit-backdrop-filter: blur(14px) saturate(1.3); backdrop-filter: blur(14px) saturate(1.3);
+    box-shadow: 0 4px 18px rgba(20,30,50,.12); }
+  select, button { font: inherit; color: var(--ink); min-height: 40px; padding: 8px 12px; cursor: pointer; }
+  select { appearance: none; -webkit-appearance: none; padding-right: 30px; width: 100%;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+    background-position: right 14px center, right 9px center; background-size: 5px 5px; background-repeat: no-repeat; }
+  button:active { transform: scale(.97); }
+  #info { padding: 10px 12px; min-width: 120px; }
+  #st { font-size: 20px; font-weight: 600; letter-spacing: .04em; }
+  #meta { font-size: 13px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  #src { font-size: 12px; margin-top: 4px; opacity: .85; }
+  #refresh { margin-top: 8px; min-height: 32px; padding: 4px 12px; font-size: 13px; }
+  @media (prefers-color-scheme: dark) { :root { --glass: rgba(20,28,44,.38); --line: rgba(255,255,255,.22); --ink: #eef3fb; } }
+</style>
+</head>
+<body>
+<div id="sky" aria-hidden="true"></div>
+
+<div class="ui left">
+  <label class="glass" style="display:block">
+    <select id="pick" aria-label="手动选择天气"></select>
+  </label>
+  <button id="loc" class="glass" type="button">使用我的位置</button>
+</div>
+
+<div class="ui right">
+  <div id="info" class="glass" role="status" aria-live="polite">
+    <div id="st">—</div>
+    <div id="meta">— °C · 风 — km/h</div>
+    <div id="src">加载中</div>
+    <button id="refresh" class="glass" type="button">刷新</button>
+  </div>
+</div>
+
+<script type="module">
+  import { STATES, stateName, applyWeather, resolveWeather, cachedWeather, defaultState } from './weather/weather.mjs';
+
+  const $ = id => document.getElementById(id);
+  const sky = $('sky');
+  let mode = 'default';          // 'default' | 'live' | 'manual'
+
+  for (const s of STATES) $('pick').append(new Option(s.name, s.id));
+
+  function show(state, { temp = null, wind = null, src = '' } = {}) {
+    const h = applyWeather(sky, state);
+    $('pick').value = state;
+    $('st').textContent = stateName(state);
+    const t = temp == null ? '—' : Math.round(temp);
+    const w = wind == null ? '—' : Math.round(wind);
+    $('meta').textContent = `${t} °C · 风 ${w} km/h`;
+    $('src').textContent = src + (h.reducedMotion ? '（系统开了「减少动态」，动效已关）' : '');
+    document.documentElement.dataset.state = state;
+  }
+
+  const hhmm = ms => new Date(ms).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+  async function useLocation() {
+    mode = 'live';
+    $('src').textContent = '定位中…';
+    $('loc').disabled = $('refresh').disabled = true;
+    try {
+      const r = await resolveWeather();
+      const d = r.data || {};
+      const src = r.source === 'live' ? `实时 · ${hhmm(Date.now())}`
+        : r.source === 'cache' ? `用上次结果（${hhmm(d.at)}）· ${r.reason}`
+        : `用默认天气 · ${r.reason}`;
+      show(r.state, { temp: d.temp, wind: d.wind, src });
+    } finally { $('loc').disabled = $('refresh').disabled = false; }
+  }
+
+  function useDefault() {
+    mode = 'default';
+    show(defaultState(), { src: '用默认天气' });
+  }
+
+  $('pick').addEventListener('change', e => { mode = 'manual'; show(e.target.value, { src: '手动预览' }); });
+  $('loc').addEventListener('click', useLocation);
+  $('refresh').addEventListener('click', () => (mode === 'manual' ? show($('pick').value, { src: '手动预览' }) : mode === 'live' ? useLocation() : useDefault()));
+
+  // 起始：?s=snow 直接看某一种；否则如果已经授权过定位就直接取实时，没有就用默认
+  const q = new URLSearchParams(location.search).get('s');
+  if (q && STATES.some(s => s.id === q)) { mode = 'manual'; show(q, { src: '手动预览' }); }
+  else {
+    useDefault();
+    const c = cachedWeather();
+    if (c && c.state) show((c.state === 'sunny' || c.state === 'night') ? defaultState() : c.state,
+      { temp: c.temp, wind: c.wind, src: `上次结果（${hhmm(c.at)}）` });
+    navigator.permissions?.query({ name: 'geolocation' }).then(p => { if (p.state === 'granted') useLocation(); }).catch(() => {});
+  }
+</script>
+</body>
+</html>

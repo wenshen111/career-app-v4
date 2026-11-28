@@ -51,3 +51,12 @@
 - 不改成功率算法，不改 `data.js` 里的数字。
 - 纯浏览器 API，不加任何依赖。
 - 每次补丁把右上角版本号加一位小版本（v4.1、v4.2…）。
+
+## 天气背景 demo（独立页，不影响 App）
+
+打开：**https://wenshen111.github.io/career-app-v4/weather-demo.html**（`?s=snow` 这样可以直接看某一种）
+
+- `web/weather/bg/`：16 张手机竖版天气底图。`.png` 是 GPT 给的原图，`.webp` 是同一张压缩版（单张约 75KB），页面先用 WebP，加载失败再用 PNG。
+- `web/weather/weather.mjs`：定位 + Open-Meteo（免费、不要 key）→ 16 种状态；`applyWeather(容器, 状态)` 挂上底图和动效层。UI 放在同一个容器里、`z-index ≥ 1` 就盖在天气上面。
+- 定位被拒/失败 → 按本地时间用晴日或晴夜；接口挂了 → 用上次结果（只存在本机 `wsr4-weather`，位置只留两位小数）。
+- 测试：`node tests/weather.mjs`
