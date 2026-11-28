@@ -14,16 +14,21 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
-  deploy:
+  # 上传和发布拆成两个 job：同一个 job 里刚传完就去查 artifact，GitHub 偶尔还查不到（报 No artifacts named "github-pages"）。
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v4
