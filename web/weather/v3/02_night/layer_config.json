@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "night",
+  "name": "晴夜",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "night__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/night__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L00__sky_color__base.svg"
+    },
+    {
+      "id": "night__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/night__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "night__L09__stars__far",
+      "z": 9,
+      "component": "stars",
+      "depth": "far",
+      "source": "layers/night__L09__stars__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "twinkle",
+        "periodSeconds": 11,
+        "minOpacity": 0.65
+      },
+      "description": "细小星点；不与月亮或云烘焙。",
+      "pngFile": "L09_stars_far.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L09__stars__far.svg"
+    },
+    {
+      "id": "night__L10__moon_halo__far",
+      "z": 10,
+      "component": "moon_halo",
+      "depth": "far",
+      "source": "layers/night__L10__moon_halo__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "月光晕，与月牙本体分离。",
+      "pngFile": "L10_moon_halo_far.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L10__moon_halo__far.svg"
+    },
+    {
+      "id": "night__L11__moon_crescent__far",
+      "z": 11,
+      "component": "moon_crescent",
+      "depth": "far",
+      "source": "layers/night__L11__moon_crescent__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "月牙本体；保留原生PNG独立透明纹理。",
+      "texture": "assets/textures/moon_crescent.png",
+      "placement": {
+        "x": 870,
+        "y": 160,
+        "width": 430,
+        "height": 286.6666666666667,
+        "opacity": 0.95,
+        "mirror": false,
+        "rotationDegrees": 0
+      },
+      "pngFile": "L11_moon_crescent_far.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L11__moon_crescent__far.svg"
+    },
+    {
+      "id": "night__L20__cloud_cirrus_far__far",
+      "z": 20,
+      "component": "cloud_cirrus_far",
+      "depth": "far",
+      "source": "layers/night__L20__cloud_cirrus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 135,
+        "dxPx": 22,
+        "dyPx": 3,
+        "phase": 0.2
+      },
+      "description": "夜空高云。",
+      "texture": "assets/textures/cloud_cirrus_far.png",
+      "placement": {
+        "x": -430,
+        "y": -330,
+        "width": 2030,
+        "height": 1353.3333333333333,
+        "opacity": 0.26,
+        "mirror": false,
+        "rotationDegrees": -4
+      },
+      "pngFile": "L20_cloud_cirrus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L20__cloud_cirrus_far__far.svg"
+    },
+    {
+      "id": "night__L30__cloud_cumulus_mid__mid",
+      "z": 30,
+      "component": "cloud_cumulus_mid",
+      "depth": "mid",
+      "source": "layers/night__L30__cloud_cumulus_mid__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 105,
+        "dxPx": 27,
+        "dyPx": 3,
+        "phase": 0.8
+      },
+      "description": "低亮度月光云。",
+      "texture": "assets/textures/cloud_cumulus_mid.png",
+      "placement": {
+        "x": -410,
+        "y": 90,
+        "width": 1880,
+        "height": 1253.3333333333333,
+        "opacity": 0.19,
+        "mirror": true,
+        "rotationDegrees": -9
+      },
+      "pngFile": "L30_cloud_cumulus_mid_mid.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L30__cloud_cumulus_mid__mid.svg"
+    },
+    {
+      "id": "night__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/night__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/night/layers/night__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}

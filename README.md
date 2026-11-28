@@ -56,7 +56,7 @@
 
 打开：**https://wenshen111.github.io/career-app-v4/weather-demo.html**（`?s=snow` 这样可以直接看某一种）
 
-- `web/weather/bg/`：16 张手机竖版天气底图。`.png` 是 GPT 给的原图，`.webp` 是同一张压缩版（单张约 75KB），页面先用 WebP，加载失败再用 PNG。
-- `web/weather/weather.mjs`：定位 + Open-Meteo（免费、不要 key）→ 16 种状态；`applyWeather(容器, 状态)` 挂上底图和动效层。UI 放在同一个容器里、`z-index ≥ 1` 就盖在天气上面。
+- `web/weather/v3/`：GPT 的 v3 分层素材，原 PNG 不压不缩。每种天气一个目录（`01_sunny` … `16_cyclone`），里面是 L00–L90 各层 PNG 和 `layer_config.json`；`textures/` 是云、雾、沙尘、气旋的原生纹理；`weather_manifest.json` 是总清单。
+- `web/weather/weather.mjs`：定位 + Open-Meteo（免费、不要 key）→ 16 种状态；`applyWeather(容器, 状态)` 只加载这一种天气的图层，按 `layer_config.json` 叠加并按各层 motion 参数动。UI 放在同一个容器里、`z-index ≥ 1` 就盖在天气上面。
 - 定位被拒/失败 → 按本地时间用晴日或晴夜；接口挂了 → 用上次结果（只存在本机 `wsr4-weather`，位置只留两位小数）。
 - 测试：`node tests/weather.mjs`

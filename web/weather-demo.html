@@ -22,6 +22,8 @@
     background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
     background-position: right 14px center, right 9px center; background-size: 5px 5px; background-repeat: no-repeat; }
   button:active { transform: scale(.97); }
+  button[aria-pressed=true] { background: rgba(255,255,255,.62); font-weight: 600; }
+  button:disabled { opacity: .6; }
   #info { padding: 10px 12px; min-width: 120px; }
   #st { font-size: 20px; font-weight: 600; letter-spacing: .04em; }
   #meta { font-size: 13px; margin-top: 2px; font-variant-numeric: tabular-nums; }
@@ -38,6 +40,7 @@
     <select id="pick" aria-label="手动选择天气"></select>
   </label>
   <button id="loc" class="glass" type="button">使用我的位置</button>
+  <button id="still" class="glass" type="button" aria-pressed="false">只看静态底图</button>
 </div>
 
 <div class="ui right">
@@ -58,16 +61,30 @@
 
   for (const s of STATES) $('pick').append(new Option(s.name, s.id));
 
-  function show(state, { temp = null, wind = null, src = '' } = {}) {
-    const h = applyWeather(sky, state);
+  let cur = null, still = false, seq = 0;
+  async function show(state, { temp = null, wind = null, src = '' } = {}) {
+    const my = ++seq;
     $('pick').value = state;
     $('st').textContent = stateName(state);
     const t = temp == null ? '—' : Math.round(temp);
     const w = wind == null ? '—' : Math.round(wind);
     $('meta').textContent = `${t} °C · 风 ${w} km/h`;
-    $('src').textContent = src + (h.reducedMotion ? '（系统开了「减少动态」，动效已关）' : '');
+    $('src').textContent = '图层加载中…';
+    const h = applyWeather(sky, state);
+    try { await h.ready; } catch (e) { if (my === seq) $('src').textContent = '加载失败，再点一次刷新'; return; }
+    if (my !== seq) return;
+    cur = h;
+    if (h.reducedMotion && !still) { still = true; }
+    if (still) h.setPaused(true);
+    syncStill();
+    $('src').textContent = src + (h.reducedMotion ? '（系统开了「减少动态」，先停着；点「播放动效」可以看）' : '');
     document.documentElement.dataset.state = state;
   }
+  function syncStill() {
+    $('still').setAttribute('aria-pressed', String(still));
+    $('still').textContent = still ? '播放动效' : '只看静态底图';
+  }
+  $('still').addEventListener('click', () => { still = !still; if (cur) cur.setPaused(still); syncStill(); });
 
   const hhmm = ms => new Date(ms).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
@@ -81,7 +98,7 @@
       const src = r.source === 'live' ? `实时 · ${hhmm(Date.now())}`
         : r.source === 'cache' ? `用上次结果（${hhmm(d.at)}）· ${r.reason}`
         : `用默认天气 · ${r.reason}`;
-      show(r.state, { temp: d.temp, wind: d.wind, src });
+      await show(r.state, { temp: d.temp, wind: d.wind, src });
     } finally { $('loc').disabled = $('refresh').disabled = false; }
   }
 
@@ -98,10 +115,10 @@
   const q = new URLSearchParams(location.search).get('s');
   if (q && STATES.some(s => s.id === q)) { mode = 'manual'; show(q, { src: '手动预览' }); }
   else {
-    useDefault();
     const c = cachedWeather();
     if (c && c.state) show((c.state === 'sunny' || c.state === 'night') ? defaultState() : c.state,
       { temp: c.temp, wind: c.wind, src: `上次结果（${hhmm(c.at)}）` });
+    else useDefault();
     navigator.permissions?.query({ name: 'geolocation' }).then(p => { if (p.state === 'granted') useLocation(); }).catch(() => {});
   }
 </script>

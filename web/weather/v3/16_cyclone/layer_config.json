@@ -1,0 +1,317 @@
+{
+  "schemaVersion": "3.0.0",
+  "id": "cyclone",
+  "name": "热带气旋",
+  "canvas": {
+    "width": 1440,
+    "height": 3120,
+    "aspect": "6:13 = 9:19.5",
+    "coordinateUnits": "design-px",
+    "fit": "cover",
+    "safeContentRect": [
+      140,
+      580,
+      1160,
+      1940
+    ]
+  },
+  "sourceType": "SVG layered composition + transparent PNG textures",
+  "layers": [
+    {
+      "id": "cyclone__L00__sky_color__base",
+      "z": 0,
+      "component": "sky_color",
+      "depth": "base",
+      "source": "layers/cyclone__L00__sky_color__base.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": true,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。",
+      "pngFile": "L00_sky_color_base.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L00__sky_color__base.svg"
+    },
+    {
+      "id": "cyclone__L05__air_scatter__far",
+      "z": 5,
+      "component": "air_scatter",
+      "depth": "far",
+      "source": "layers/cyclone__L05__air_scatter__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "static"
+      },
+      "description": "低对比大气散射；可独立淡入、控制整体空气感。",
+      "pngFile": "L05_air_scatter_far.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L05__air_scatter__far.svg"
+    },
+    {
+      "id": "cyclone__L20__cloud_stratus_far__far",
+      "z": 20,
+      "component": "cloud_stratus_far",
+      "depth": "far",
+      "source": "layers/cyclone__L20__cloud_stratus_far__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 100,
+        "dxPx": 35,
+        "dyPx": 4,
+        "phase": 0.3
+      },
+      "description": "远层雨云底。",
+      "texture": "assets/textures/cloud_stratus_far.png",
+      "placement": {
+        "x": -620,
+        "y": -480,
+        "width": 2500,
+        "height": 1666.6666666666667,
+        "opacity": 0.63,
+        "mirror": false,
+        "rotationDegrees": -10
+      },
+      "pngFile": "L20_cloud_stratus_far_far.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L20__cloud_stratus_far__far.svg"
+    },
+    {
+      "id": "cyclone__L30__cyclone_spiral_mid__mid",
+      "z": 30,
+      "component": "cyclone_spiral_mid",
+      "depth": "mid",
+      "source": "layers/cyclone__L30__cyclone_spiral_mid__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "swayRotate",
+        "periodSeconds": 100,
+        "degrees": 5,
+        "origin": [
+          910,
+          430
+        ]
+      },
+      "description": "局部气旋云带缓慢往返转动。",
+      "texture": "assets/textures/cyclone_spiral_mid.png",
+      "placement": {
+        "x": -490,
+        "y": -260,
+        "width": 2390,
+        "height": 1593.3333333333333,
+        "opacity": 0.93,
+        "mirror": false,
+        "rotationDegrees": -4
+      },
+      "pngFile": "L30_cyclone_spiral_mid_mid.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L30__cyclone_spiral_mid__mid.svg"
+    },
+    {
+      "id": "cyclone__L40__cloud_storm_near__near",
+      "z": 40,
+      "component": "cloud_storm_near",
+      "depth": "near",
+      "source": "layers/cyclone__L40__cloud_storm_near__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "drift",
+        "periodSeconds": 52,
+        "dxPx": -65,
+        "dyPx": 8,
+        "phase": 1
+      },
+      "description": "侧下外围风暴云。",
+      "texture": "assets/textures/cloud_storm_near.png",
+      "placement": {
+        "x": -780,
+        "y": 2430,
+        "width": 2440,
+        "height": 1626.6666666666667,
+        "opacity": 0.27,
+        "mirror": true,
+        "rotationDegrees": -12
+      },
+      "pngFile": "L40_cloud_storm_near_near.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L40__cloud_storm_near__near.svg"
+    },
+    {
+      "id": "cyclone__L60__rain__far",
+      "z": 60,
+      "component": "rain",
+      "depth": "far",
+      "source": "layers/cyclone__L60__rain__far.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -118.4,
+          320
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "cyclone_rain_far",
+        "kind": "rain",
+        "countPerTile": 240,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 1510,
+        "velocityPxPerSecond": [
+          -118.4,
+          320
+        ]
+      },
+      "pngFile": "L60_rain_far.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L60__rain__far.svg"
+    },
+    {
+      "id": "cyclone__L65__rain__mid",
+      "z": 65,
+      "component": "rain",
+      "depth": "mid",
+      "source": "layers/cyclone__L65__rain__mid.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -199.8,
+          540
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "cyclone_rain_mid",
+        "kind": "rain",
+        "countPerTile": 168,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 1515,
+        "velocityPxPerSecond": [
+          -199.8,
+          540
+        ]
+      },
+      "pngFile": "L65_rain_mid.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L65__rain__mid.svg"
+    },
+    {
+      "id": "cyclone__L70__rain__near",
+      "z": 70,
+      "component": "rain",
+      "depth": "near",
+      "source": "layers/cyclone__L70__rain__near.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": true,
+      "motion": {
+        "type": "particles",
+        "velocityPxPerSecond": [
+          -314.5,
+          850
+        ],
+        "tileSize": [
+          1440,
+          1560
+        ]
+      },
+      "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+      "particle": {
+        "patternId": "cyclone_rain_near",
+        "kind": "rain",
+        "countPerTile": 84,
+        "tileSize": [
+          1440,
+          1560
+        ],
+        "seed": 1520,
+        "velocityPxPerSecond": [
+          -314.5,
+          850
+        ]
+      },
+      "pngFile": "L70_rain_near.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L70__rain__near.svg"
+    },
+    {
+      "id": "cyclone__L90__readability_scrim__ui",
+      "z": 90,
+      "component": "readability_scrim",
+      "depth": "ui",
+      "source": "layers/cyclone__L90__readability_scrim__ui.svg",
+      "canvas": [
+        1440,
+        3120
+      ],
+      "opaque": false,
+      "blend": "normal",
+      "defaultVisible": false,
+      "motion": {
+        "type": "static"
+      },
+      "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。",
+      "pngFile": "L90_readability_scrim_ui.png",
+      "editableSvg": "../ENGINEERING/weather/cyclone/layers/cyclone__L90__readability_scrim__ui.svg"
+    }
+  ],
+  "quality": {
+    "vectorSources": "native scalable; 1440x3120 design canvas",
+    "rasterTextures": "see assets/texture_manifest.json for native pixel dimensions; not 4K",
+    "notes": "最终候选v3；重构纵深、天气辨识度和粒子；不是旧平面图的无损分层恢复。"
+  },
+  "loopNotes": "有机云纹理不是左右无缝贴图，使用小幅往返漂移；粒子采用周期pattern，可无缝循环。"
+}

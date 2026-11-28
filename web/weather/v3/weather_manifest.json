@@ -1,0 +1,4464 @@
+{
+  "version": "3.0.0",
+  "canvas": [
+    1440,
+    3120
+  ],
+  "states": [
+    {
+      "id": "sunny",
+      "name": "晴日",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "sunny__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/sunny__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "sunny__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/sunny__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "sunny__L10__sun_halo__far",
+          "z": 10,
+          "component": "sun_halo",
+          "depth": "far",
+          "source": "layers/sunny__L10__sun_halo__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "宽幅日光晕；太阳本体和光束另分层。"
+        },
+        {
+          "id": "sunny__L11__sun_disc__far",
+          "z": 11,
+          "component": "sun_disc",
+          "depth": "far",
+          "source": "layers/sunny__L11__sun_disc__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "太阳圆面；原生矢量。"
+        },
+        {
+          "id": "sunny__L12__sun_rays__far",
+          "z": 12,
+          "component": "sun_rays",
+          "depth": "far",
+          "source": "layers/sunny__L12__sun_rays__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "breathe",
+            "periodSeconds": 14,
+            "minOpacity": 0.65
+          },
+          "description": "独立日光束，幅度克制，不旋转成魔法特效。"
+        },
+        {
+          "id": "sunny__L20__cloud_cirrus_far__far",
+          "z": 20,
+          "component": "cloud_cirrus_far",
+          "depth": "far",
+          "source": "layers/sunny__L20__cloud_cirrus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 110,
+            "dxPx": 34,
+            "dyPx": 5,
+            "phase": 0.2
+          },
+          "description": "高空薄云，沿画幅上缘自然延伸。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": -260,
+            "y": -360,
+            "width": 2040,
+            "height": 1360.0,
+            "opacity": 0.55,
+            "mirror": false,
+            "rotationDegrees": -7
+          }
+        },
+        {
+          "id": "sunny__L40__cloud_cumulus_mid__near",
+          "z": 40,
+          "component": "cloud_cumulus_mid",
+          "depth": "near",
+          "source": "layers/sunny__L40__cloud_cumulus_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 78,
+            "dxPx": -38,
+            "dyPx": 8,
+            "phase": 1.5
+          },
+          "description": "下缘斜向入画的积云。",
+          "texture": "assets/textures/cloud_cumulus_mid.png",
+          "placement": {
+            "x": -490,
+            "y": 2480,
+            "width": 2110,
+            "height": 1406.6666666666667,
+            "opacity": 0.58,
+            "mirror": false,
+            "rotationDegrees": -4
+          }
+        },
+        {
+          "id": "sunny__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/sunny__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "night",
+      "name": "晴夜",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "night__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/night__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "night__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/night__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "night__L09__stars__far",
+          "z": 9,
+          "component": "stars",
+          "depth": "far",
+          "source": "layers/night__L09__stars__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "twinkle",
+            "periodSeconds": 11,
+            "minOpacity": 0.65
+          },
+          "description": "细小星点；不与月亮或云烘焙。"
+        },
+        {
+          "id": "night__L10__moon_halo__far",
+          "z": 10,
+          "component": "moon_halo",
+          "depth": "far",
+          "source": "layers/night__L10__moon_halo__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "月光晕，与月牙本体分离。"
+        },
+        {
+          "id": "night__L11__moon_crescent__far",
+          "z": 11,
+          "component": "moon_crescent",
+          "depth": "far",
+          "source": "layers/night__L11__moon_crescent__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "月牙本体；保留原生PNG独立透明纹理。",
+          "texture": "assets/textures/moon_crescent.png",
+          "placement": {
+            "x": 870,
+            "y": 160,
+            "width": 430,
+            "height": 286.6666666666667,
+            "opacity": 0.95,
+            "mirror": false,
+            "rotationDegrees": 0
+          }
+        },
+        {
+          "id": "night__L20__cloud_cirrus_far__far",
+          "z": 20,
+          "component": "cloud_cirrus_far",
+          "depth": "far",
+          "source": "layers/night__L20__cloud_cirrus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 135,
+            "dxPx": 22,
+            "dyPx": 3,
+            "phase": 0.2
+          },
+          "description": "夜空高云。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": -430,
+            "y": -330,
+            "width": 2030,
+            "height": 1353.3333333333333,
+            "opacity": 0.26,
+            "mirror": false,
+            "rotationDegrees": -4
+          }
+        },
+        {
+          "id": "night__L30__cloud_cumulus_mid__mid",
+          "z": 30,
+          "component": "cloud_cumulus_mid",
+          "depth": "mid",
+          "source": "layers/night__L30__cloud_cumulus_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 105,
+            "dxPx": 27,
+            "dyPx": 3,
+            "phase": 0.8
+          },
+          "description": "低亮度月光云。",
+          "texture": "assets/textures/cloud_cumulus_mid.png",
+          "placement": {
+            "x": -410,
+            "y": 90,
+            "width": 1880,
+            "height": 1253.3333333333333,
+            "opacity": 0.19,
+            "mirror": true,
+            "rotationDegrees": -9
+          }
+        },
+        {
+          "id": "night__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/night__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "partly_cloudy",
+      "name": "少云",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "partly_cloudy__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/partly_cloudy__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "partly_cloudy__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/partly_cloudy__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "partly_cloudy__L10__sun_halo__far",
+          "z": 10,
+          "component": "sun_halo",
+          "depth": "far",
+          "source": "layers/partly_cloudy__L10__sun_halo__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "宽幅日光晕；太阳本体和光束另分层。"
+        },
+        {
+          "id": "partly_cloudy__L11__sun_disc__far",
+          "z": 11,
+          "component": "sun_disc",
+          "depth": "far",
+          "source": "layers/partly_cloudy__L11__sun_disc__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "太阳圆面；原生矢量。"
+        },
+        {
+          "id": "partly_cloudy__L12__sun_rays__far",
+          "z": 12,
+          "component": "sun_rays",
+          "depth": "far",
+          "source": "layers/partly_cloudy__L12__sun_rays__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "breathe",
+            "periodSeconds": 14,
+            "minOpacity": 0.65
+          },
+          "description": "独立日光束，幅度克制，不旋转成魔法特效。"
+        },
+        {
+          "id": "partly_cloudy__L20__cloud_cirrus_far__far",
+          "z": 20,
+          "component": "cloud_cirrus_far",
+          "depth": "far",
+          "source": "layers/partly_cloudy__L20__cloud_cirrus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 110,
+            "dxPx": 30,
+            "dyPx": 4,
+            "phase": 0.2
+          },
+          "description": "高空卷云。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": -310,
+            "y": -350,
+            "width": 2230,
+            "height": 1486.6666666666667,
+            "opacity": 0.63,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "partly_cloudy__L30__cloud_cumulus_mid__mid",
+          "z": 30,
+          "component": "cloud_cumulus_mid",
+          "depth": "mid",
+          "source": "layers/partly_cloudy__L30__cloud_cumulus_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 90,
+            "dxPx": 48,
+            "dyPx": 7,
+            "phase": 0.8
+          },
+          "description": "上缘宽幅积云群。",
+          "texture": "assets/textures/cloud_cumulus_mid.png",
+          "placement": {
+            "x": -340,
+            "y": -120,
+            "width": 2070,
+            "height": 1380.0,
+            "opacity": 0.72,
+            "mirror": true,
+            "rotationDegrees": -8
+          }
+        },
+        {
+          "id": "partly_cloudy__L40__cloud_cumulus_mid__near",
+          "z": 40,
+          "component": "cloud_cumulus_mid",
+          "depth": "near",
+          "source": "layers/partly_cloudy__L40__cloud_cumulus_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 68,
+            "dxPx": -34,
+            "dyPx": 5,
+            "phase": 1.5
+          },
+          "description": "由画幅右下延伸的近云。",
+          "texture": "assets/textures/cloud_cumulus_mid.png",
+          "placement": {
+            "x": 130,
+            "y": 2500,
+            "width": 1770,
+            "height": 1180.0,
+            "opacity": 0.52,
+            "mirror": false,
+            "rotationDegrees": 5
+          }
+        },
+        {
+          "id": "partly_cloudy__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/partly_cloudy__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "overcast",
+      "name": "阴天",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "overcast__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/overcast__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "overcast__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/overcast__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "overcast__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/overcast__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "overcast__L30__cloud_stratus_far__mid",
+          "z": 30,
+          "component": "cloud_stratus_far",
+          "depth": "mid",
+          "source": "layers/overcast__L30__cloud_stratus_far__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -360,
+            "y": -235,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.83,
+            "mirror": false,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "overcast__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/overcast__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": 260,
+            "y": 2630,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.2,
+            "mirror": true,
+            "rotationDegrees": 7
+          }
+        },
+        {
+          "id": "overcast__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/overcast__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "fog",
+      "name": "薄雾",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "fog__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/fog__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "fog__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/fog__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "fog__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/fog__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.45,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "fog__L30__cloud_stratus_far__mid",
+          "z": 30,
+          "component": "cloud_stratus_far",
+          "depth": "mid",
+          "source": "layers/fog__L30__cloud_stratus_far__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 85,
+            "dxPx": -33,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "雾中朦胧云体。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": 100,
+            "y": -310,
+            "width": 1940,
+            "height": 1293.3333333333333,
+            "opacity": 0.22,
+            "mirror": true,
+            "rotationDegrees": 8
+          }
+        },
+        {
+          "id": "fog__L43__fog_volume_mid__far",
+          "z": 43,
+          "component": "fog_volume_mid",
+          "depth": "far",
+          "source": "layers/fog__L43__fog_volume_mid__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 108,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 2.8666666666666667
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -950,
+            "y": 200,
+            "width": 2810,
+            "height": 1580,
+            "opacity": 0.27599999999999997,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "fog__L45__fog_volume_mid__mid",
+          "z": 45,
+          "component": "fog_volume_mid",
+          "depth": "mid",
+          "source": "layers/fog__L45__fog_volume_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 84,
+            "dxPx": -70,
+            "dyPx": 12,
+            "phase": 3.0
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": 330,
+            "y": 830,
+            "width": 2340,
+            "height": 1830,
+            "opacity": 0.322,
+            "mirror": true,
+            "rotationDegrees": 16
+          }
+        },
+        {
+          "id": "fog__L47__fog_volume_mid__near",
+          "z": 47,
+          "component": "fog_volume_mid",
+          "depth": "near",
+          "source": "layers/fog__L47__fog_volume_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 65,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 3.1333333333333333
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -730,
+            "y": 1780,
+            "width": 2910,
+            "height": 1670,
+            "opacity": 0.506,
+            "mirror": true,
+            "rotationDegrees": -15
+          }
+        },
+        {
+          "id": "fog__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/fog__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "drizzle",
+      "name": "细雨",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "drizzle__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/drizzle__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "drizzle__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/drizzle__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "drizzle__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/drizzle__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "drizzle__L30__cloud_stratus_far__mid",
+          "z": 30,
+          "component": "cloud_stratus_far",
+          "depth": "mid",
+          "source": "layers/drizzle__L30__cloud_stratus_far__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -360,
+            "y": -235,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.65,
+            "mirror": false,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "drizzle__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/drizzle__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": 260,
+            "y": 2630,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.2,
+            "mirror": true,
+            "rotationDegrees": 7
+          }
+        },
+        {
+          "id": "drizzle__L43__fog_volume_mid__far",
+          "z": 43,
+          "component": "fog_volume_mid",
+          "depth": "far",
+          "source": "layers/drizzle__L43__fog_volume_mid__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 108,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 2.8666666666666667
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -950,
+            "y": 200,
+            "width": 2810,
+            "height": 1580,
+            "opacity": 0.12,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "drizzle__L45__fog_volume_mid__mid",
+          "z": 45,
+          "component": "fog_volume_mid",
+          "depth": "mid",
+          "source": "layers/drizzle__L45__fog_volume_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 84,
+            "dxPx": -70,
+            "dyPx": 12,
+            "phase": 3.0
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": 330,
+            "y": 830,
+            "width": 2340,
+            "height": 1830,
+            "opacity": 0.14,
+            "mirror": true,
+            "rotationDegrees": 16
+          }
+        },
+        {
+          "id": "drizzle__L47__fog_volume_mid__near",
+          "z": 47,
+          "component": "fog_volume_mid",
+          "depth": "near",
+          "source": "layers/drizzle__L47__fog_volume_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 65,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 3.1333333333333333
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -730,
+            "y": 1780,
+            "width": 2910,
+            "height": 1670,
+            "opacity": 0.22,
+            "mirror": true,
+            "rotationDegrees": -15
+          }
+        },
+        {
+          "id": "drizzle__L60__rain__far",
+          "z": 60,
+          "component": "rain",
+          "depth": "far",
+          "source": "layers/drizzle__L60__rain__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -57.599999999999994,
+              320
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "drizzle_rain_far",
+            "kind": "rain",
+            "countPerTile": 105,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1210,
+            "velocityPxPerSecond": [
+              -57.599999999999994,
+              320
+            ]
+          }
+        },
+        {
+          "id": "drizzle__L65__rain__mid",
+          "z": 65,
+          "component": "rain",
+          "depth": "mid",
+          "source": "layers/drizzle__L65__rain__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -97.2,
+              540
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "drizzle_rain_mid",
+            "kind": "rain",
+            "countPerTile": 73,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1215,
+            "velocityPxPerSecond": [
+              -97.2,
+              540
+            ]
+          }
+        },
+        {
+          "id": "drizzle__L70__rain__near",
+          "z": 70,
+          "component": "rain",
+          "depth": "near",
+          "source": "layers/drizzle__L70__rain__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -153.0,
+              850
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "drizzle_rain_near",
+            "kind": "rain",
+            "countPerTile": 36,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1220,
+            "velocityPxPerSecond": [
+              -153.0,
+              850
+            ]
+          }
+        },
+        {
+          "id": "drizzle__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/drizzle__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "downpour",
+      "name": "暴雨",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "downpour__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/downpour__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "downpour__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/downpour__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "downpour__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/downpour__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "downpour__L30__cloud_storm_near__mid",
+          "z": 30,
+          "component": "cloud_storm_near",
+          "depth": "mid",
+          "source": "layers/downpour__L30__cloud_storm_near__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_storm_near.png",
+          "placement": {
+            "x": -360,
+            "y": -140,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.92,
+            "mirror": false,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "downpour__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/downpour__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -820,
+            "y": 2490,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.18,
+            "mirror": true,
+            "rotationDegrees": -11
+          }
+        },
+        {
+          "id": "downpour__L43__fog_volume_mid__far",
+          "z": 43,
+          "component": "fog_volume_mid",
+          "depth": "far",
+          "source": "layers/downpour__L43__fog_volume_mid__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 108,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 2.8666666666666667
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -950,
+            "y": 200,
+            "width": 2810,
+            "height": 1580,
+            "opacity": 0.12,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "downpour__L45__fog_volume_mid__mid",
+          "z": 45,
+          "component": "fog_volume_mid",
+          "depth": "mid",
+          "source": "layers/downpour__L45__fog_volume_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 84,
+            "dxPx": -70,
+            "dyPx": 12,
+            "phase": 3.0
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": 330,
+            "y": 830,
+            "width": 2340,
+            "height": 1830,
+            "opacity": 0.14,
+            "mirror": true,
+            "rotationDegrees": 16
+          }
+        },
+        {
+          "id": "downpour__L47__fog_volume_mid__near",
+          "z": 47,
+          "component": "fog_volume_mid",
+          "depth": "near",
+          "source": "layers/downpour__L47__fog_volume_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 65,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 3.1333333333333333
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -730,
+            "y": 1780,
+            "width": 2910,
+            "height": 1670,
+            "opacity": 0.22,
+            "mirror": true,
+            "rotationDegrees": -15
+          }
+        },
+        {
+          "id": "downpour__L60__rain__far",
+          "z": 60,
+          "component": "rain",
+          "depth": "far",
+          "source": "layers/downpour__L60__rain__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -118.4,
+              320
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "downpour_rain_far",
+            "kind": "rain",
+            "countPerTile": 315,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1240,
+            "velocityPxPerSecond": [
+              -118.4,
+              320
+            ]
+          }
+        },
+        {
+          "id": "downpour__L65__rain__mid",
+          "z": 65,
+          "component": "rain",
+          "depth": "mid",
+          "source": "layers/downpour__L65__rain__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -199.8,
+              540
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "downpour_rain_mid",
+            "kind": "rain",
+            "countPerTile": 220,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1245,
+            "velocityPxPerSecond": [
+              -199.8,
+              540
+            ]
+          }
+        },
+        {
+          "id": "downpour__L70__rain__near",
+          "z": 70,
+          "component": "rain",
+          "depth": "near",
+          "source": "layers/downpour__L70__rain__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -314.5,
+              850
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "downpour_rain_near",
+            "kind": "rain",
+            "countPerTile": 110,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1250,
+            "velocityPxPerSecond": [
+              -314.5,
+              850
+            ]
+          }
+        },
+        {
+          "id": "downpour__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/downpour__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "thunderstorm",
+      "name": "雷暴",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "thunderstorm__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/thunderstorm__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "thunderstorm__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/thunderstorm__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "thunderstorm__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/thunderstorm__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "thunderstorm__L30__cloud_storm_near__mid",
+          "z": 30,
+          "component": "cloud_storm_near",
+          "depth": "mid",
+          "source": "layers/thunderstorm__L30__cloud_storm_near__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_storm_near.png",
+          "placement": {
+            "x": -360,
+            "y": -140,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.9,
+            "mirror": false,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "thunderstorm__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/thunderstorm__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -820,
+            "y": 2490,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.18,
+            "mirror": true,
+            "rotationDegrees": -11
+          }
+        },
+        {
+          "id": "thunderstorm__L50__lightning_glow__mid",
+          "z": 50,
+          "component": "lightning_glow",
+          "depth": "mid",
+          "source": "layers/thunderstorm__L50__lightning_glow__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "lightning",
+            "role": "glow",
+            "cycleSeconds": 12,
+            "pulseAtSeconds": 5.2
+          },
+          "description": "照亮云层的柔光；不与闪电亮纹合并。",
+          "staticPreviewOpacity": 0.5
+        },
+        {
+          "id": "thunderstorm__L55__lightning_channel__near",
+          "z": 55,
+          "component": "lightning_channel",
+          "depth": "near",
+          "source": "layers/thunderstorm__L55__lightning_channel__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "lightning",
+            "role": "bolt",
+            "cycleSeconds": 12,
+            "pulseAtSeconds": 5.2
+          },
+          "description": "细而不规则的自然分叉原生矢量电光；柔光另层。",
+          "alternateTexture": "assets/textures/lightning_channel.png"
+        },
+        {
+          "id": "thunderstorm__L60__rain__far",
+          "z": 60,
+          "component": "rain",
+          "depth": "far",
+          "source": "layers/thunderstorm__L60__rain__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -57.599999999999994,
+              320
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "thunderstorm_rain_far",
+            "kind": "rain",
+            "countPerTile": 175,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1270,
+            "velocityPxPerSecond": [
+              -57.599999999999994,
+              320
+            ]
+          }
+        },
+        {
+          "id": "thunderstorm__L65__rain__mid",
+          "z": 65,
+          "component": "rain",
+          "depth": "mid",
+          "source": "layers/thunderstorm__L65__rain__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -97.2,
+              540
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "thunderstorm_rain_mid",
+            "kind": "rain",
+            "countPerTile": 122,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1275,
+            "velocityPxPerSecond": [
+              -97.2,
+              540
+            ]
+          }
+        },
+        {
+          "id": "thunderstorm__L70__rain__near",
+          "z": 70,
+          "component": "rain",
+          "depth": "near",
+          "source": "layers/thunderstorm__L70__rain__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -153.0,
+              850
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "thunderstorm_rain_near",
+            "kind": "rain",
+            "countPerTile": 61,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1280,
+            "velocityPxPerSecond": [
+              -153.0,
+              850
+            ]
+          }
+        },
+        {
+          "id": "thunderstorm__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/thunderstorm__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "snow",
+      "name": "飘雪",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "snow__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/snow__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "snow__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/snow__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "snow__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/snow__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "snow__L30__cloud_stratus_far__mid",
+          "z": 30,
+          "component": "cloud_stratus_far",
+          "depth": "mid",
+          "source": "layers/snow__L30__cloud_stratus_far__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -360,
+            "y": -235,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.55,
+            "mirror": true,
+            "rotationDegrees": 5
+          }
+        },
+        {
+          "id": "snow__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/snow__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": 260,
+            "y": 2630,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.2,
+            "mirror": true,
+            "rotationDegrees": 7
+          }
+        },
+        {
+          "id": "snow__L60__snow__far",
+          "z": 60,
+          "component": "snow",
+          "depth": "far",
+          "source": "layers/snow__L60__snow__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              10,
+              26
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "snow_snow_far",
+            "kind": "snow",
+            "countPerTile": 180,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 2300,
+            "velocityPxPerSecond": [
+              10,
+              26
+            ]
+          }
+        },
+        {
+          "id": "snow__L65__snow__mid",
+          "z": 65,
+          "component": "snow",
+          "depth": "mid",
+          "source": "layers/snow__L65__snow__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              10,
+              45
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "snow_snow_mid",
+            "kind": "snow",
+            "countPerTile": 110,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 2305,
+            "velocityPxPerSecond": [
+              10,
+              45
+            ]
+          }
+        },
+        {
+          "id": "snow__L70__snow__near",
+          "z": 70,
+          "component": "snow",
+          "depth": "near",
+          "source": "layers/snow__L70__snow__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              10,
+              72
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "snow_snow_near",
+            "kind": "snow",
+            "countPerTile": 45,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 2310,
+            "velocityPxPerSecond": [
+              10,
+              72
+            ]
+          }
+        },
+        {
+          "id": "snow__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/snow__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "blizzard",
+      "name": "暴雪",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "blizzard__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/blizzard__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "blizzard__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/blizzard__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "blizzard__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/blizzard__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "blizzard__L30__cloud_storm_near__mid",
+          "z": 30,
+          "component": "cloud_storm_near",
+          "depth": "mid",
+          "source": "layers/blizzard__L30__cloud_storm_near__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_storm_near.png",
+          "placement": {
+            "x": -360,
+            "y": -140,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.68,
+            "mirror": false,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "blizzard__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/blizzard__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -820,
+            "y": 2490,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.18,
+            "mirror": true,
+            "rotationDegrees": -11
+          }
+        },
+        {
+          "id": "blizzard__L43__fog_volume_mid__far",
+          "z": 43,
+          "component": "fog_volume_mid",
+          "depth": "far",
+          "source": "layers/blizzard__L43__fog_volume_mid__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 108,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 2.8666666666666667
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -950,
+            "y": 200,
+            "width": 2810,
+            "height": 1580,
+            "opacity": 0.18,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "blizzard__L45__fog_volume_mid__mid",
+          "z": 45,
+          "component": "fog_volume_mid",
+          "depth": "mid",
+          "source": "layers/blizzard__L45__fog_volume_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 84,
+            "dxPx": -70,
+            "dyPx": 12,
+            "phase": 3.0
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": 330,
+            "y": 830,
+            "width": 2340,
+            "height": 1830,
+            "opacity": 0.21000000000000002,
+            "mirror": true,
+            "rotationDegrees": 16
+          }
+        },
+        {
+          "id": "blizzard__L47__fog_volume_mid__near",
+          "z": 47,
+          "component": "fog_volume_mid",
+          "depth": "near",
+          "source": "layers/blizzard__L47__fog_volume_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 65,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 3.1333333333333333
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -730,
+            "y": 1780,
+            "width": 2910,
+            "height": 1670,
+            "opacity": 0.33,
+            "mirror": true,
+            "rotationDegrees": -15
+          }
+        },
+        {
+          "id": "blizzard__L60__snow__far",
+          "z": 60,
+          "component": "snow",
+          "depth": "far",
+          "source": "layers/blizzard__L60__snow__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -130,
+              54.6
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "blizzard_snow_far",
+            "kind": "snow",
+            "countPerTile": 360,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 2330,
+            "velocityPxPerSecond": [
+              -130,
+              54.6
+            ]
+          }
+        },
+        {
+          "id": "blizzard__L65__snow__mid",
+          "z": 65,
+          "component": "snow",
+          "depth": "mid",
+          "source": "layers/blizzard__L65__snow__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -225,
+              94.5
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "blizzard_snow_mid",
+            "kind": "snow",
+            "countPerTile": 220,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 2335,
+            "velocityPxPerSecond": [
+              -225,
+              94.5
+            ]
+          }
+        },
+        {
+          "id": "blizzard__L70__snow__near",
+          "z": 70,
+          "component": "snow",
+          "depth": "near",
+          "source": "layers/blizzard__L70__snow__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -360,
+              151.20000000000002
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "blizzard_snow_near",
+            "kind": "snow",
+            "countPerTile": 90,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 2340,
+            "velocityPxPerSecond": [
+              -360,
+              151.20000000000002
+            ]
+          }
+        },
+        {
+          "id": "blizzard__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/blizzard__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "hail",
+      "name": "冰雹",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "hail__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/hail__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "hail__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/hail__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "hail__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/hail__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "hail__L30__cloud_storm_near__mid",
+          "z": 30,
+          "component": "cloud_storm_near",
+          "depth": "mid",
+          "source": "layers/hail__L30__cloud_storm_near__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_storm_near.png",
+          "placement": {
+            "x": -360,
+            "y": -140,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.76,
+            "mirror": true,
+            "rotationDegrees": 5
+          }
+        },
+        {
+          "id": "hail__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/hail__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -820,
+            "y": 2490,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.18,
+            "mirror": true,
+            "rotationDegrees": -11
+          }
+        },
+        {
+          "id": "hail__L60__hail__far",
+          "z": 60,
+          "component": "hail",
+          "depth": "far",
+          "source": "layers/hail__L60__hail__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -72.0,
+              400
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "hail_hail_far",
+            "kind": "hail",
+            "countPerTile": 130,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 3060,
+            "velocityPxPerSecond": [
+              -72.0,
+              400
+            ]
+          }
+        },
+        {
+          "id": "hail__L65__hail__mid",
+          "z": 65,
+          "component": "hail",
+          "depth": "mid",
+          "source": "layers/hail__L65__hail__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -122.39999999999999,
+              680
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "hail_hail_mid",
+            "kind": "hail",
+            "countPerTile": 85,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 3065,
+            "velocityPxPerSecond": [
+              -122.39999999999999,
+              680
+            ]
+          }
+        },
+        {
+          "id": "hail__L70__hail__near",
+          "z": 70,
+          "component": "hail",
+          "depth": "near",
+          "source": "layers/hail__L70__hail__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -183.6,
+              1020
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "hail_hail_near",
+            "kind": "hail",
+            "countPerTile": 38,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 3070,
+            "velocityPxPerSecond": [
+              -183.6,
+              1020
+            ]
+          }
+        },
+        {
+          "id": "hail__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/hail__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "freezing_rain",
+      "name": "冻雨",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "freezing_rain__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/freezing_rain__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "freezing_rain__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/freezing_rain__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "freezing_rain__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/freezing_rain__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 96,
+            "dxPx": 40,
+            "dyPx": 7,
+            "phase": 0.1
+          },
+          "description": "延伸至画幅外的远层层云。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -520,
+            "y": -530,
+            "width": 2470,
+            "height": 1646.6666666666667,
+            "opacity": 0.78,
+            "mirror": false,
+            "rotationDegrees": -6
+          }
+        },
+        {
+          "id": "freezing_rain__L30__cloud_stratus_far__mid",
+          "z": 30,
+          "component": "cloud_stratus_far",
+          "depth": "mid",
+          "source": "layers/freezing_rain__L30__cloud_stratus_far__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 72,
+            "dxPx": -50,
+            "dyPx": 6,
+            "phase": 0.9
+          },
+          "description": "主体云墙，顶部越出画幅；与远云交叠。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -360,
+            "y": -235,
+            "width": 2200,
+            "height": 1466.6666666666667,
+            "opacity": 0.7,
+            "mirror": true,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "freezing_rain__L40__cloud_stratus_far__near",
+          "z": 40,
+          "component": "cloud_stratus_far",
+          "depth": "near",
+          "source": "layers/freezing_rain__L40__cloud_stratus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 63,
+            "dxPx": 40,
+            "dyPx": 6,
+            "phase": 1.8
+          },
+          "description": "淡化的边缘近云，避开中央信息区。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": 260,
+            "y": 2630,
+            "width": 2280,
+            "height": 1520.0,
+            "opacity": 0.2,
+            "mirror": true,
+            "rotationDegrees": 7
+          }
+        },
+        {
+          "id": "freezing_rain__L43__fog_volume_mid__far",
+          "z": 43,
+          "component": "fog_volume_mid",
+          "depth": "far",
+          "source": "layers/freezing_rain__L43__fog_volume_mid__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 108,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 2.8666666666666667
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -950,
+            "y": 200,
+            "width": 2810,
+            "height": 1580,
+            "opacity": 0.12,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "freezing_rain__L45__fog_volume_mid__mid",
+          "z": 45,
+          "component": "fog_volume_mid",
+          "depth": "mid",
+          "source": "layers/freezing_rain__L45__fog_volume_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 84,
+            "dxPx": -70,
+            "dyPx": 12,
+            "phase": 3.0
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": 330,
+            "y": 830,
+            "width": 2340,
+            "height": 1830,
+            "opacity": 0.14,
+            "mirror": true,
+            "rotationDegrees": 16
+          }
+        },
+        {
+          "id": "freezing_rain__L47__fog_volume_mid__near",
+          "z": 47,
+          "component": "fog_volume_mid",
+          "depth": "near",
+          "source": "layers/freezing_rain__L47__fog_volume_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 65,
+            "dxPx": 58,
+            "dyPx": 12,
+            "phase": 3.1333333333333333
+          },
+          "description": "独立宽幅柔雾幕；缩放、倾斜、镜像、相位分别控制。",
+          "texture": "assets/textures/fog_volume_mid.png",
+          "placement": {
+            "x": -730,
+            "y": 1780,
+            "width": 2910,
+            "height": 1670,
+            "opacity": 0.22,
+            "mirror": true,
+            "rotationDegrees": -15
+          }
+        },
+        {
+          "id": "freezing_rain__L60__freezing_rain__far",
+          "z": 60,
+          "component": "freezing_rain",
+          "depth": "far",
+          "source": "layers/freezing_rain__L60__freezing_rain__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -57.599999999999994,
+              320
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "freezing_rain_freezing_rain_far",
+            "kind": "freezing_rain",
+            "countPerTile": 160,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1390,
+            "velocityPxPerSecond": [
+              -57.599999999999994,
+              320
+            ]
+          }
+        },
+        {
+          "id": "freezing_rain__L65__freezing_rain__mid",
+          "z": 65,
+          "component": "freezing_rain",
+          "depth": "mid",
+          "source": "layers/freezing_rain__L65__freezing_rain__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -97.2,
+              540
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "freezing_rain_freezing_rain_mid",
+            "kind": "freezing_rain",
+            "countPerTile": 112,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1395,
+            "velocityPxPerSecond": [
+              -97.2,
+              540
+            ]
+          }
+        },
+        {
+          "id": "freezing_rain__L70__freezing_rain__near",
+          "z": 70,
+          "component": "freezing_rain",
+          "depth": "near",
+          "source": "layers/freezing_rain__L70__freezing_rain__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -153.0,
+              850
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "freezing_rain_freezing_rain_near",
+            "kind": "freezing_rain",
+            "countPerTile": 56,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1400,
+            "velocityPxPerSecond": [
+              -153.0,
+              850
+            ]
+          }
+        },
+        {
+          "id": "freezing_rain__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/freezing_rain__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "wind",
+      "name": "强风",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "wind__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/wind__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "wind__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/wind__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "wind__L20__cloud_cirrus_far__far",
+          "z": 20,
+          "component": "cloud_cirrus_far",
+          "depth": "far",
+          "source": "layers/wind__L20__cloud_cirrus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 68,
+            "dxPx": 85,
+            "dyPx": 14,
+            "phase": 0.2
+          },
+          "description": "斜向拉长的高空卷云。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": -560,
+            "y": -120,
+            "width": 2530,
+            "height": 1070,
+            "opacity": 0.72,
+            "mirror": false,
+            "rotationDegrees": -17
+          }
+        },
+        {
+          "id": "wind__L30__cloud_cirrus_far__mid",
+          "z": 30,
+          "component": "cloud_cirrus_far",
+          "depth": "mid",
+          "source": "layers/wind__L30__cloud_cirrus_far__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 55,
+            "dxPx": -110,
+            "dyPx": 18,
+            "phase": 0.8
+          },
+          "description": "侧边高速云带。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": 250,
+            "y": 180,
+            "width": 2030,
+            "height": 700,
+            "opacity": 0.4,
+            "mirror": true,
+            "rotationDegrees": -18
+          }
+        },
+        {
+          "id": "wind__L40__cloud_cumulus_mid__near",
+          "z": 40,
+          "component": "cloud_cumulus_mid",
+          "depth": "near",
+          "source": "layers/wind__L40__cloud_cumulus_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 50,
+            "dxPx": -125,
+            "dyPx": 12,
+            "phase": 1.5
+          },
+          "description": "右倾风吹云。",
+          "texture": "assets/textures/cloud_cumulus_mid.png",
+          "placement": {
+            "x": -620,
+            "y": 2450,
+            "width": 2150,
+            "height": 1433.3333333333333,
+            "opacity": 0.38,
+            "mirror": false,
+            "rotationDegrees": -13
+          }
+        },
+        {
+          "id": "wind__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/wind__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "dust",
+      "name": "沙尘",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "dust__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/dust__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "dust__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/dust__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "dust__L20__dust_volume_mid__far",
+          "z": 20,
+          "component": "dust_volume_mid",
+          "depth": "far",
+          "source": "layers/dust__L20__dust_volume_mid__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 78.0,
+            "dxPx": -110,
+            "dyPx": 12,
+            "phase": 1.8181818181818181
+          },
+          "description": "有方向性的沙尘体积；避免等距重复。",
+          "texture": "assets/textures/dust_volume_mid.png",
+          "placement": {
+            "x": -1150,
+            "y": -450,
+            "width": 2780,
+            "height": 1960,
+            "opacity": 0.38,
+            "mirror": false,
+            "rotationDegrees": -11
+          }
+        },
+        {
+          "id": "dust__L35__dust_volume_mid__mid",
+          "z": 35,
+          "component": "dust_volume_mid",
+          "depth": "mid",
+          "source": "layers/dust__L35__dust_volume_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 73.5,
+            "dxPx": -110,
+            "dyPx": 12,
+            "phase": 3.1818181818181817
+          },
+          "description": "有方向性的沙尘体积；避免等距重复。",
+          "texture": "assets/textures/dust_volume_mid.png",
+          "placement": {
+            "x": 150,
+            "y": 480,
+            "width": 2510,
+            "height": 2050,
+            "opacity": 0.36,
+            "mirror": true,
+            "rotationDegrees": 20
+          }
+        },
+        {
+          "id": "dust__L48__dust_volume_mid__near",
+          "z": 48,
+          "component": "dust_volume_mid",
+          "depth": "near",
+          "source": "layers/dust__L48__dust_volume_mid__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 69.6,
+            "dxPx": -110,
+            "dyPx": 12,
+            "phase": 4.363636363636363
+          },
+          "description": "有方向性的沙尘体积；避免等距重复。",
+          "texture": "assets/textures/dust_volume_mid.png",
+          "placement": {
+            "x": -1070,
+            "y": 1680,
+            "width": 3060,
+            "height": 2130,
+            "opacity": 0.48,
+            "mirror": true,
+            "rotationDegrees": -19
+          }
+        },
+        {
+          "id": "dust__L60__dust__far",
+          "z": 60,
+          "component": "dust",
+          "depth": "far",
+          "source": "layers/dust__L60__dust__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -35,
+              4
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "dust_dust_far",
+            "kind": "dust",
+            "countPerTile": 110,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 4060,
+            "velocityPxPerSecond": [
+              -35,
+              4
+            ]
+          }
+        },
+        {
+          "id": "dust__L65__dust__mid",
+          "z": 65,
+          "component": "dust",
+          "depth": "mid",
+          "source": "layers/dust__L65__dust__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -65,
+              4
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "dust_dust_mid",
+            "kind": "dust",
+            "countPerTile": 65,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 4065,
+            "velocityPxPerSecond": [
+              -65,
+              4
+            ]
+          }
+        },
+        {
+          "id": "dust__L70__dust__near",
+          "z": 70,
+          "component": "dust",
+          "depth": "near",
+          "source": "layers/dust__L70__dust__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -110,
+              4
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "dust_dust_near",
+            "kind": "dust",
+            "countPerTile": 30,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 4070,
+            "velocityPxPerSecond": [
+              -110,
+              4
+            ]
+          }
+        },
+        {
+          "id": "dust__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/dust__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "heat",
+      "name": "酷热",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "heat__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/heat__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "heat__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/heat__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "heat__L10__sun_halo__far",
+          "z": 10,
+          "component": "sun_halo",
+          "depth": "far",
+          "source": "layers/heat__L10__sun_halo__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "宽幅日光晕；太阳本体和光束另分层。"
+        },
+        {
+          "id": "heat__L11__sun_disc__far",
+          "z": 11,
+          "component": "sun_disc",
+          "depth": "far",
+          "source": "layers/heat__L11__sun_disc__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "太阳圆面；原生矢量。"
+        },
+        {
+          "id": "heat__L12__sun_rays__far",
+          "z": 12,
+          "component": "sun_rays",
+          "depth": "far",
+          "source": "layers/heat__L12__sun_rays__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "breathe",
+            "periodSeconds": 14,
+            "minOpacity": 0.65
+          },
+          "description": "独立日光束，幅度克制，不旋转成魔法特效。"
+        },
+        {
+          "id": "heat__L20__cloud_cirrus_far__far",
+          "z": 20,
+          "component": "cloud_cirrus_far",
+          "depth": "far",
+          "source": "layers/heat__L20__cloud_cirrus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 120,
+            "dxPx": 20,
+            "dyPx": 3,
+            "phase": 0
+          },
+          "description": "高空热霾薄云。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": -420,
+            "y": -365,
+            "width": 2210,
+            "height": 1473.3333333333333,
+            "opacity": 0.32,
+            "mirror": false,
+            "rotationDegrees": -5
+          }
+        },
+        {
+          "id": "heat__L40__cloud_cirrus_far__near",
+          "z": 40,
+          "component": "cloud_cirrus_far",
+          "depth": "near",
+          "source": "layers/heat__L40__cloud_cirrus_far__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 100,
+            "dxPx": -22,
+            "dyPx": 2,
+            "phase": 0.8
+          },
+          "description": "低处暖色薄云。",
+          "texture": "assets/textures/cloud_cirrus_far.png",
+          "placement": {
+            "x": -500,
+            "y": 2380,
+            "width": 2440,
+            "height": 1626.6666666666667,
+            "opacity": 0.27,
+            "mirror": true,
+            "rotationDegrees": 7
+          }
+        },
+        {
+          "id": "heat__L75__heat_refraction__effect",
+          "z": 75,
+          "component": "heat_refraction",
+          "depth": "effect",
+          "source": "layers/heat__L75__heat_refraction__effect.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "heat",
+            "filterId": "heat_heat",
+            "maxDisplacementPx": 5,
+            "periodSeconds": 18
+          },
+          "description": "真实位移滤镜定义；作用于后方天气组，不作用于App文字，空白PNG无法表达折射。"
+        },
+        {
+          "id": "heat__L78__warm_air_glow__near",
+          "z": 78,
+          "component": "warm_air_glow",
+          "depth": "near",
+          "source": "layers/heat__L78__warm_air_glow__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "独立暖空气光色层，无火焰图案。"
+        },
+        {
+          "id": "heat__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/heat__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    },
+    {
+      "id": "cyclone",
+      "name": "热带气旋",
+      "canvas": {
+        "width": 1440,
+        "height": 3120,
+        "aspect": "6:13 = 9:19.5",
+        "coordinateUnits": "design-px",
+        "fit": "cover",
+        "safeContentRect": [
+          140,
+          580,
+          1160,
+          1940
+        ]
+      },
+      "layers": [
+        {
+          "id": "cyclone__L00__sky_color__base",
+          "z": 0,
+          "component": "sky_color",
+          "depth": "base",
+          "source": "layers/cyclone__L00__sky_color__base.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": true,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "纯天空底色；无云、无降水、无光斑。原生矢量，可直接编辑渐变。"
+        },
+        {
+          "id": "cyclone__L05__air_scatter__far",
+          "z": 5,
+          "component": "air_scatter",
+          "depth": "far",
+          "source": "layers/cyclone__L05__air_scatter__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "static"
+          },
+          "description": "低对比大气散射；可独立淡入、控制整体空气感。"
+        },
+        {
+          "id": "cyclone__L20__cloud_stratus_far__far",
+          "z": 20,
+          "component": "cloud_stratus_far",
+          "depth": "far",
+          "source": "layers/cyclone__L20__cloud_stratus_far__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 100,
+            "dxPx": 35,
+            "dyPx": 4,
+            "phase": 0.3
+          },
+          "description": "远层雨云底。",
+          "texture": "assets/textures/cloud_stratus_far.png",
+          "placement": {
+            "x": -620,
+            "y": -480,
+            "width": 2500,
+            "height": 1666.6666666666667,
+            "opacity": 0.63,
+            "mirror": false,
+            "rotationDegrees": -10
+          }
+        },
+        {
+          "id": "cyclone__L30__cyclone_spiral_mid__mid",
+          "z": 30,
+          "component": "cyclone_spiral_mid",
+          "depth": "mid",
+          "source": "layers/cyclone__L30__cyclone_spiral_mid__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "swayRotate",
+            "periodSeconds": 100,
+            "degrees": 5,
+            "origin": [
+              910,
+              430
+            ]
+          },
+          "description": "局部气旋云带缓慢往返转动。",
+          "texture": "assets/textures/cyclone_spiral_mid.png",
+          "placement": {
+            "x": -490,
+            "y": -260,
+            "width": 2390,
+            "height": 1593.3333333333333,
+            "opacity": 0.93,
+            "mirror": false,
+            "rotationDegrees": -4
+          }
+        },
+        {
+          "id": "cyclone__L40__cloud_storm_near__near",
+          "z": 40,
+          "component": "cloud_storm_near",
+          "depth": "near",
+          "source": "layers/cyclone__L40__cloud_storm_near__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "drift",
+            "periodSeconds": 52,
+            "dxPx": -65,
+            "dyPx": 8,
+            "phase": 1
+          },
+          "description": "侧下外围风暴云。",
+          "texture": "assets/textures/cloud_storm_near.png",
+          "placement": {
+            "x": -780,
+            "y": 2430,
+            "width": 2440,
+            "height": 1626.6666666666667,
+            "opacity": 0.27,
+            "mirror": true,
+            "rotationDegrees": -12
+          }
+        },
+        {
+          "id": "cyclone__L60__rain__far",
+          "z": 60,
+          "component": "rain",
+          "depth": "far",
+          "source": "layers/cyclone__L60__rain__far.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -118.4,
+              320
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "cyclone_rain_far",
+            "kind": "rain",
+            "countPerTile": 240,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1510,
+            "velocityPxPerSecond": [
+              -118.4,
+              320
+            ]
+          }
+        },
+        {
+          "id": "cyclone__L65__rain__mid",
+          "z": 65,
+          "component": "rain",
+          "depth": "mid",
+          "source": "layers/cyclone__L65__rain__mid.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -199.8,
+              540
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "cyclone_rain_mid",
+            "kind": "rain",
+            "countPerTile": 168,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1515,
+            "velocityPxPerSecond": [
+              -199.8,
+              540
+            ]
+          }
+        },
+        {
+          "id": "cyclone__L70__rain__near",
+          "z": 70,
+          "component": "rain",
+          "depth": "near",
+          "source": "layers/cyclone__L70__rain__near.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": true,
+          "motion": {
+            "type": "particles",
+            "velocityPxPerSecond": [
+              -314.5,
+              850
+            ],
+            "tileSize": [
+              1440,
+              1560
+            ]
+          },
+          "description": "原生矢量粒子；通过patternTransform偏移实现无接缝循环，禁止整张雨图反复跳回。",
+          "particle": {
+            "patternId": "cyclone_rain_near",
+            "kind": "rain",
+            "countPerTile": 84,
+            "tileSize": [
+              1440,
+              1560
+            ],
+            "seed": 1520,
+            "velocityPxPerSecond": [
+              -314.5,
+              850
+            ]
+          }
+        },
+        {
+          "id": "cyclone__L90__readability_scrim__ui",
+          "z": 90,
+          "component": "readability_scrim",
+          "depth": "ui",
+          "source": "layers/cyclone__L90__readability_scrim__ui.svg",
+          "canvas": [
+            1440,
+            3120
+          ],
+          "opaque": false,
+          "blend": "normal",
+          "defaultVisible": false,
+          "motion": {
+            "type": "static"
+          },
+          "description": "可选中央可读性罩层，默认关闭；始终位于App文字下方。"
+        }
+      ]
+    }
+  ]
+}
