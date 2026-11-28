@@ -58,5 +58,6 @@
 
 - `web/weather/v3/`：GPT 的 v3 分层素材，原 PNG 不压不缩。每种天气一个目录（`01_sunny` … `16_cyclone`），里面是 L00–L90 各层 PNG 和 `layer_config.json`；`textures/` 是云、雾、沙尘、气旋的原生纹理；`weather_manifest.json` 是总清单。
 - `web/weather/weather.mjs`：定位 + Open-Meteo（免费、不要 key）→ 16 种状态；`applyWeather(容器, 状态)` 只加载这一种天气的图层，按 `layer_config.json` 叠加并按各层 motion 参数动。UI 放在同一个容器里、`z-index ≥ 1` 就盖在天气上面。
+- `web/weather/fx.mjs`：每种天气的签名动效（流星、分形闪电、涟漪、溅水、积雪、冰雹弹跳、冰晶闪、风痕、沙墙、底部热折射、环形雨等），叠在 v3 图层之间，同一套 1440×3120 坐标。
 - 定位被拒/失败 → 按本地时间用晴日或晴夜；接口挂了 → 用上次结果（只存在本机 `wsr4-weather`，位置只留两位小数）。
 - 测试：`node tests/weather.mjs`

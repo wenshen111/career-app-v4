@@ -144,6 +144,7 @@ export async function resolveWeather({ fetchImpl, timeoutMs = 8000, geoTimeoutMs
 const V3 = new URL('./v3/', import.meta.url).href;
 const CW = 1440, CH = 3120;
 const TAU = Math.PI * 2;
+const clamp01 = x => Math.max(0, Math.min(1, x));
 
 const CSS = `
 .wx-root{position:absolute;inset:0;overflow:hidden;z-index:var(--wx-z,0);pointer-events:none;contain:strict;opacity:0;transition:opacity .8s ease}
@@ -212,6 +213,8 @@ function heatFilter() {
   return { id, svg, turb: svg.querySelector('feTurbulence') };
 }
 
+import { createFx } from './fx.mjs';
+
 const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
@@ -236,7 +239,7 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
   const nodes = [];      // { m, el, ... } 需要逐帧更新的层
   const parts = [];      // 粒子层
   const imgs = [];
-  let heat = null, raf = 0, destroyed = false, paused = reduce, holdT = 0, t0 = performance.now(), W = 1, H = 1, s = 1, dpr = 1, ro = null, lastHeat = -1;
+  let fx = null, lastT = 0, heat = null, raf = 0, destroyed = false, paused = reduce, holdT = 0, t0 = performance.now(), W = 1, H = 1, s = 1, dpr = 1, ro = null, lastHeat = -1;
 
   const handle = {
     state: st.id, root, reducedMotion: reduce,
@@ -255,15 +258,24 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
     scene.style.transform = `translate(${(W - CW * s) / 2}px,${(H - CH * s) / 2}px) scale(${s})`;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     for (const p of parts) { p.cv.width = Math.round(CW * s * dpr); p.cv.height = Math.round(CH * s * dpr); }
+    const ox = (W - CW * s) / 2, oy = (H - CH * s) / 2;
+    if (fx) fx.layout({ s, dpr, view: { x0: Math.max(0, -ox / s), y0: Math.max(0, -oy / s), x1: Math.min(CW, (W - ox) / s), y1: Math.min(CH, (H - oy) / s) } });
     render(paused ? 0 : (performance.now() - t0) / 1000, paused);
   }
 
   function render(t, rest) {
+    let dt = t - lastT; lastT = t;
+    if (!(dt > 0) || dt > 0.1) dt = dt > 0.1 ? 0.1 : 0;
     for (const n of nodes) {
       const m = n.m;
+      const mod = (!rest && fx && fx.nodeMod && fx.nodeMod(n, t)) || null;
       if (m.type === 'drift') {
-        const a = t / m.periodSeconds * TAU + (m.phase || 0);
-        n.el.style.transform = rest ? 'none' : `translate3d(${(Math.sin(a) * (m.dxPx || 0)).toFixed(2)}px,${(Math.cos(a) * (m.dyPx || 0)).toFixed(2)}px,0)`;
+        const sp = mod && mod.speedMul || 1, mul = mod && mod.dxMul || 1;
+        const a = t * sp / m.periodSeconds * TAU + (m.phase || 0);
+        if (rest) { n.tx = n.ty = 0; n.el.style.transform = 'none'; n.el.style.opacity = n.op; continue; }
+        n.tx = Math.sin(a) * (m.dxPx || 0) * mul; n.ty = Math.cos(a) * (m.dyPx || 0);
+        n.el.style.transform = `translate3d(${n.tx.toFixed(2)}px,${n.ty.toFixed(2)}px,0)` + (mod && mod.rot ? ` rotate(${mod.rot.toFixed(3)}deg)` : '');
+        if (mod && mod.opMul != null) n.el.style.opacity = clamp01(n.op * mod.opMul).toFixed(3);
       } else if (m.type === 'swayRotate') {
         n.el.style.transform = rest ? 'none' : `rotate(${(Math.sin(t / m.periodSeconds * TAU) * m.degrees).toFixed(3)}deg)`;
       } else if (m.type === 'breathe') {
@@ -273,25 +285,39 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
         const low = m.minOpacity ?? 0.65;
         n.el.style.opacity = rest ? 1 : low + (1 - low) * (0.5 + 0.5 * Math.sin(t / (m.periodSeconds * n.k) * TAU + n.ph));
       } else if (m.type === 'lightning') {
-        const d = (t % m.cycleSeconds) - m.pulseAtSeconds;
-        // 柔光比电光退得慢一些，留一点照亮云的余光
-        const op = rest ? 0 : m.role === 'glow' ? 0.5 * flash(d < 0.22 ? d : 0.22 + (d - 0.22) * 0.55) : flash(d);
+        let op;
+        if (rest) op = 0;
+        else if (fx && fx.lightning) op = fx.lightning(m.role, t);
+        else { const d = (t % m.cycleSeconds) - m.pulseAtSeconds; op = m.role === 'glow' ? 0.5 * flash(d < 0.22 ? d : 0.22 + (d - 0.22) * 0.55) : flash(d); }
         n.el.style.opacity = op; n.el.style.visibility = op > 0.001 ? 'visible' : 'hidden';
       }
     }
-    for (const p of parts) {
+    parts.forEach((p, i) => {
       const v = p.m.velocityPxPerSecond, ts = p.m.tileSize;
-      const ox = rest ? 0 : ((t * v[0]) % ts[0] + ts[0]) % ts[0];
-      const oy = rest ? 0 : ((t * v[1]) % ts[1] + ts[1]) % ts[1];
-      const k = s * dpr, g = p.g;
+      const h = (!rest && fx && fx.particle && fx.particle(i, t)) || {};
+      if (rest) { p.ox = p.oy = 0; }
+      else { const mu = h.mult ?? 1; p.ox = (((p.ox || 0) + v[0] * mu * dt) % ts[0] + ts[0]) % ts[0]; p.oy = (((p.oy || 0) + v[1] * mu * dt) % ts[1] + ts[1]) % ts[1]; }
+      const k = s * dpr, g = p.g, ox = p.ox + (h.dx || 0), oy = p.oy + (h.dy || 0), sk = h.skew || 0;
       g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, p.cv.width, p.cv.height);
-      p.pat.setTransform(new DOMMatrix([k, 0, 0, k, ox * k, oy * k]));
+      p.pat.setTransform(new DOMMatrix([k, 0, k * sk, k, ox * k, oy * k]));
       g.fillStyle = p.pat; g.fillRect(0, 0, p.cv.width, p.cv.height);
-    }
+      if (h.dup > 0.01) {            // 一阵更密的：同一图案错开半格再叠一遍
+        g.globalAlpha = Math.min(1, h.dup);
+        p.pat.setTransform(new DOMMatrix([k, 0, k * sk, k, (ox + ts[0] * 0.37) * k, (oy + ts[1] * 0.5) * k]));
+        g.fillRect(0, 0, p.cv.width, p.cv.height); g.globalAlpha = 1;
+      }
+      if (fx && fx.particleAfter) { g.setTransform(k, 0, 0, k, 0, 0); fx.particleAfter(g); }
+    });
+    if (fx) { if (rest) fx.rest(); else fx.frame(t, dt); }
     if (heat) {
-      // 噪声频率 18 秒慢慢变；属性改动会让滤镜重算，十分之一秒更新一次就够
-      const q = rest ? 0 : Math.floor(t * 10);
-      if (q !== lastHeat) { lastHeat = q; heat.turb.setAttribute('baseFrequency', `${(0.004 + Math.sin(t / 18 * TAU) * 0.0007).toFixed(5)} .025`); }
+      // 噪声频率慢慢变；属性改动会让滤镜重算，所以限频更新
+      const q = rest ? 0 : Math.floor(t * (heat.strong ? 12 : 10));
+      if (q !== lastHeat) {
+        lastHeat = q;
+        heat.turb.setAttribute('baseFrequency', heat.strong
+          ? `${(0.006 + Math.sin(t / 7 * TAU) * 0.0012).toFixed(5)} ${(0.03 + Math.sin(t / 3.1 * TAU) * 0.006).toFixed(5)}`
+          : `${(0.004 + Math.sin(t / 18 * TAU) * 0.0007).toFixed(5)} .025`);
+      }
     }
   }
 
@@ -316,6 +342,7 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
       for (const im of imgs) im.src = '';
       for (const p of parts) { p.cv.width = p.cv.height = 0; }
       if (heat) heat.svg.remove();
+      if (fx) fx.destroy();
     };
     if (fade && root.isConnected && root.classList.contains('on')) { root.classList.remove('on'); setTimeout(release, 850); }
     else release();
@@ -331,12 +358,29 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
     const need = [...new Set(layers.map(urlOf).filter(Boolean))];
     const loaded = new Map(await Promise.all(need.map(async u => [u, await loadImg(u)])));
     if (destroyed) { loaded.forEach(im => (im.src = '')); return; }
+    const byZ = new Map(layers.map(l => [l.z, l]));
+    const texCache = new Map();
+    if (!reduce) {
+      fx = createFx(st.id, {
+        // 酷热的折射带要把下面各层重画一遍：给出 z 以下每层的图和它此刻的位置
+        layersBelow: z => drawList.filter(d => d.z < z),
+        imgAt: z => { const l = byZ.get(z); const u = l && urlOf(l); return u ? loaded.get(u) : null; },
+        texture: name => { if (!texCache.has(name)) texCache.set(name, loadImg(V3 + 'textures/' + name).then(im => { imgs.push(im); return im; })); return texCache.get(name); },
+      });
+      await Promise.allSettled(fx.pending); await new Promise(r => setTimeout(r, 0));
+      if (destroyed) return;
+    }
+    const extra = fx ? fx.elements.slice().sort((a, b) => a.z - b.z) : [];
+    const flushExtra = z => { while (extra.length && extra[0].z < z) scene.appendChild(extra.shift().el); };
     const used = new Set();
+    const drawList = [];
     const take = u => { const im = loaded.get(u); if (!used.has(u)) { used.add(u); imgs.push(im); return im; } const c = im.cloneNode(); imgs.push(c); return c; };
 
+    let driftIdx = 0;
     for (const l of layers) {
-      const m = l.motion || { type: 'static' }, u = urlOf(l);
-      if (m.type === 'heat') { heat = heatFilter(); scene.style.filter = `url(#${heat.id})`; continue; }
+      flushExtra(l.z);
+      const m = (fx && fx.motion && fx.motion(l.z)) || l.motion || { type: 'static' }, u = urlOf(l);
+      if (m.type === 'heat') { if (!(fx && fx.ownHeat)) { heat = heatFilter(); scene.style.filter = `url(#${heat.id})`; } continue; }
       if (!u) continue;
       if (m.type === 'particles') {
         const cv = document.createElement('canvas'); cv.className = 'wx-ly';
@@ -351,7 +395,9 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
         const im = take(u);
         Object.assign(im.style, { left: pl.x + 'px', top: pl.y + 'px', width: pl.width + 'px', height: pl.height + 'px',
           transform: `rotate(${pl.rotationDegrees || 0}deg)${pl.mirror ? ' scaleX(-1)' : ''}`, transformOrigin: '50% 50%' });
-        wrap.appendChild(im); scene.appendChild(wrap); nodes.push({ m, el: wrap }); continue;
+        const node = { m, el: wrap, z: l.z, i: driftIdx++, op: pl.opacity ?? 1, tx: 0, ty: 0 };
+        wrap.appendChild(im); scene.appendChild(wrap); nodes.push(node);
+        drawList.push({ z: l.z, img: loaded.get(u), pl, node }); continue;
       }
       if (m.type === 'twinkle') {
         // 三组不同节奏：周期 ×1 / ×0.63 / ×1.41，相位错开
@@ -364,8 +410,11 @@ export function applyWeather(container, stateId, { motion = 'auto' } = {}) {
         continue;
       }
       const im = take(u); im.className = 'wx-ly'; scene.appendChild(im);
+      drawList.push({ z: l.z, img: loaded.get(u), el: im });
       if (m.type !== 'static') nodes.push({ m, el: im });
     }
+
+    flushExtra(Infinity);
 
     // 上桌：放在旧场景上面淡入，淡入完撤掉旧的
     const prev = container.__wx;
